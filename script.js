@@ -9,17 +9,46 @@ const waveCount = 20;
 for (let i = 0; i < waveCount; i++) {
     waves.push({
         y: (canvas.height / 2) - 10 + Math.random() * 20, // 中央付近に分布
-        length: 0.01 + Math.random() * 0.005,
-        amplitude: 0.01 + Math.random() * 75,
-        frequency: 0.01 + Math.random() * 0.01,
+        length: 0.015 + Math.random() * 0.005,
+        amplitude: i % 2 === 1 ? 0.01 + Math.random() * 70 : 0.01 + Math.random() * 50,
+        frequency: i % 2 === 1 ? 0.01 + Math.random() * 0.01 : 0.03 + Math.random() * 0.01,
         phase: Math.random() * Math.PI * 2
     });
 }
 
+function getRandom(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function getRandomCoords(xmin, xmax,ymin,ymax, propNumberx,propNumbery) {
+    let randomCoords = {};
+    let x = Math.floor(Math.random() * (xmax - xmin + 1)) + xmin;
+    let y = Math.floor(Math.random() * (ymax - ymin + 1)) + ymin;
+    let propx = xmax / propNumberx;
+    let propy = ymax / propNumbery;
+
+    if((x < propx || x > xmax - propx) && (y < propy || y > ymax - propy)){
+        randomCoords = getRandomCoords(xmin, xmax,ymin,ymax, propNumberx,propNumbery)
+    }else if((x < propx || x > xmax - propx) || (y < propy || y > ymax - propy)){
+        randomCoords = getRandom(0,1) === 1
+            ? getRandomCoords(xmin, xmax,ymin,ymax, propNumberx,propNumbery)
+            : randomCoords = {x:x,y:y};
+    }else{
+        randomCoords = {x:x,y:y}
+    }
+
+    return randomCoords;
+}
+
 function animate() {
     requestAnimationFrame(animate);
-    ctx.fillStyle = "#0A0A0A10"; // 透明度を0.1に調整
+    ctx.fillStyle = "#0000001A"; // 透明度を0.1に調整
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    for(var j = 0; j < 10; j++){
+        let coords = getRandomCoords(0,canvas.width,0, canvas.height,14,7)
+            ctx.fillStyle = j % 2 === 1 ? "#0055FF" : "#FFFFFF";
+            ctx.fillRect(coords.x,coords.y,1,1)
+        }
 
     waves.forEach((wave, index) => {
         ctx.beginPath();
@@ -30,6 +59,7 @@ function animate() {
         }
         ctx.strokeStyle = `hsl(${index / 2 + 220}, 100%, 50%)`;
         ctx.stroke();
+
         wave.phase += wave.frequency;
     });
 }
