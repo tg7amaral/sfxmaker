@@ -6,19 +6,20 @@ canvas.height = canvas.offsetHeight;
 const waves = [];
 const waveCount = 20;
 
+function getRandom(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 for (let i = 0; i < waveCount; i++) {
     waves.push({
         y: (canvas.height / 2) - 10 + Math.random() * 20, // 中央付近に分布
-        length: 0.015 + Math.random() * 0.005,
-        amplitude: i % 2 === 1 ? 0.01 + Math.random() * 70 : 0.01 + Math.random() * 50,
-        frequency: i % 2 === 1 ? 0.01 + Math.random() * 0.01 : 0.03 + Math.random() * 0.01,
+        length: 0.01 + getRandom(1,2) / 1000000,
+        amplitude: 0.1 + getRandom(70,75),
+        frequency: 0.01 + getRandom(1,3) / 250,
         phase: Math.random() * Math.PI * 2
     });
 }
 
-function getRandom(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 function getRandomCoords(xmin, xmax,ymin,ymax, propNumberx,propNumbery) {
     let randomCoords = {};
     let x = Math.floor(Math.random() * (xmax - xmin + 1)) + xmin;

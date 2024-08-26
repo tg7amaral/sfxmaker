@@ -84,7 +84,7 @@ header > button{
 	color:#FFFFFF;
 	font-family:Verdana;
 	font-weight:normal;
-	font-size:12px;
+	font-size:14px;
 	line-height:30px;
 
 	border:none;
@@ -136,7 +136,7 @@ canvas{
 	position:absolute;
 	left:0px;top:60px;
 
-	margin:0px;padding:60px 20px 0px 20px;
+	margin:0px;padding:0px 20px 0px 20px;
 
 	box-sizing:border-box;
 
@@ -148,6 +148,11 @@ canvas{
   font-style: normal;
 	font-size:25px;
 	line-height:30px;
+	text-align:center;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	flex-wrap:wrap;
 
 	border:none;
 	border-radius:0px;
@@ -256,12 +261,12 @@ overflow: hidden;
       }
       .liquidButton > div::before {
         border-radius: 45%;
-        background: #000000FF;
+        background: #0022CCFF;
         animation: liquidAnimation 10s linear infinite;
       }
       .liquidButton > div::after {
         border-radius: 40%;
-        background: #0000007F;
+        background: #0022CC77;
         animation: liquidAnimation 10s linear infinite;
       }
       @keyframes liquidAnimation {
@@ -326,7 +331,7 @@ overflow: hidden;
 .changeText span.typed-text{
   font-weight: normal;
   color: #0055FF;
-  text-shadow:0 0 10px #0055FF40;
+  text-shadow:0 0 10px #0055FFA0;
 }
 .changeText span.cursor {
   display: inline-block;
@@ -334,14 +339,15 @@ overflow: hidden;
   margin-left: 0.1rem;
   width: 3px;
   animation: blink 1s infinite;
+  box-shadow:0 0 10px #0055FFA0;
 }
 .changeText span.cursor.typing {
   animation: none;
 }
 @keyframes blink {
-  0%  { background-color: #0055FF; }
-  49% { background-color: #0055FF; }
-  50% { background-color: transparent; }
-  99% { background-color: transparent; }
-  100%  { background-color: #0055FF; }
+  0%  { background-color: #0055FF;box-shadow:0 0 10px #0055FFA0; }
+  49% { background-color: #0055FF;box-shadow:0 0 10px #0055FFA0; }
+  50% { background-color: transparent;box-shadow:none; }
+  99% { background-color: transparent;box-shadow:none; }
+  100%  { background-color: #0055FF;box-shadow:0 0 10px #0055FFA0; }
 }
