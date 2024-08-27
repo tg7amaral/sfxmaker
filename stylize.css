@@ -4,7 +4,7 @@ body{
 	position:absolute;
 
 	left:0px;top:0px;
-	margin:0px;padding:0px;
+	margin:0px;padding:0px 0px 80px 0px;
 
 	border:none;
 	box-sizing:border-box;
@@ -15,12 +15,12 @@ body{
 }
 
 header{
-	width:100%;height:60px;
+	width:100%;height:15%;
 
 	position:relative;
 	left:0px;top:0px;
 
-	margin:0px 0px 0px 0px;padding:15px;
+	margin:0px 0px 0px 0px;padding:20px;
 
 	box-sizing:border-box;
 
@@ -31,10 +31,10 @@ header{
 }
 
 .heartPulse{
-	width:30px;height:30px;
+	width:auto;height:calc(100% - 40px);
 
 	position:absolute;
-	left:15px;top:15px;
+	left:20px;top:20px;
 	margin:0px;
 
 	vertical-align:middle;
@@ -45,10 +45,36 @@ header{
 	z-index:1;
 }
 .heart{
-	width:30px;height:30px;
+	width:auto;height:calc(100% - 40px);
 
 	position:absolute;
-	left:15px;top:15px;
+	left:20px;top:20px;
+	margin:0px;
+
+	vertical-align:middle;
+	border-radius:0px;
+
+	filter:drop-shadow(0px 0px 5px #0055FF70);
+
+	z-index:2;
+}
+.soundPulse{
+	width:auto;height:calc(100% - 40px);
+
+	position:absolute;
+	right:20px;top:20px;
+	margin:0px;
+
+	vertical-align:middle;
+	border-radius:0px;
+
+	z-index:1;
+}
+.sound{
+	width:auto;height:calc(100% - 40px);
+
+	position:absolute;
+	right:20px;top:20px;
 	margin:0px;
 
 	vertical-align:middle;
@@ -70,10 +96,10 @@ header{
 }
 
 header > button{
-	width:calc(100% - 60px);height:30px;
+	width:50%;height:30px;
 
 	position:relative;
-	left:30px;top:0px;
+	left:25%;top:0px;
 
 	margin:0px;padding:0px;
 
@@ -130,13 +156,22 @@ canvas{
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
+.titleCanvas::selection{
+	background:#0055FF;
+}
+.purple{
+	padding:0px 0px 0px 14px;
+}
+.purple::selection{
+	background:#5500FF;
+}
 .titleCanvas{
 	width:100%;height:200px;
 
 	position:absolute;
 	left:0px;top:60px;
 
-	margin:0px;padding:0px 20px 0px 20px;
+	margin:0px;padding:70px 20px 70px 20px;
 
 	box-sizing:border-box;
 
@@ -164,7 +199,7 @@ canvas{
 	position:relative;
 
 	left:0px;top:0px;
-	margin:20px 0px 0px 0px;padding:0px;
+	margin:40px 0px 0px 0px;padding:0px;
 
 	display:inline-flex;
 	justify-content:center;

@@ -13,14 +13,18 @@
 		<img src="heart.png" class="heartPulse">
 		<img src="heart.png" class="heart">
 		<button>À Ana Júlia</button>
+		<img src="sound.png" class="soundPulse">
+		<img src="sound.png" class="sound" onclick="playMusic()">
+
+		<audio id="music" src="music.mp3" style="display:none;"></audio>
 	</header>
 
 	<canvas id="waterCanvas"></canvas>
-	<h1 class="titleCanvas">Você aceita tomar açaí comigo?</h1>
+	<h1 class="titleCanvas">Você aceita tomar<span class="purple">açaí</span> comigo?</h1>
 
 	<section class="mainButtonsContainer">
 		<section class="buttonsContainer">
-			<button class="liquidButton">
+			<button class="liquidButton" onclick="yes()">
 			  <span>Sim</span>
 			  <div class="liquid" /></div>
 			</button>

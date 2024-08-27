@@ -119,3 +119,32 @@ function erase() {
 document.addEventListener("DOMContentLoaded", function() { // On DOM Load initiate the effect
   if(textArray.length) setTimeout(type, newTextDelay + 250);
 });
+
+//////////////////////////////////////////////////////////////////////////////////////
+let playing = false;
+function playMusic() {
+    const audioElement = document.querySelector("#music");
+
+    audioElement.volume = 0.25;
+    audioElement.loop = true;
+
+    if(!playing){
+        audioElement.play();
+
+        document.querySelector(".soundPulse").style.animation = "pulse 1.5s ease infinite";
+    }else{
+        audioElement.pause();
+
+        document.querySelector(".soundPulse").style.animation = "none";
+    }
+
+    playing = !playing;
+}
+
+function yes(){
+    navigator.vibrate([200,100,200]);
+
+    setTimeout(function(){            
+        window.location.href = `instagram://user?username=${encodeURIComponent("tiago.invictus")}`;
+    },1500);
+}
