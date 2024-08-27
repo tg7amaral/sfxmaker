@@ -179,7 +179,7 @@ const ctx = canvas.getContext('2d')
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
 
-let button = document.querySelector(".liquidButton")
+let button = document.querySelector(".liquidButton > span")
 
 // adicionar objetos Confetto/Sequin a arrays para desenhá-los
 let confetti = []
