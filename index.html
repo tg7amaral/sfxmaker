@@ -16,7 +16,7 @@
 		<img src="sound.png" class="soundPulse">
 		<img src="sound.png" class="sound" onclick="playMusic()">
 
-		<audio id="music" src="music.mp3" style="display:none;"></audio>
+		<audio id="music" src="music.mp3" style="display:none"></audio>
 	</header>
 
 	<canvas id="waterCanvas"></canvas>
@@ -37,8 +37,10 @@
 		</section>
 	</section>
 
-	<h2 class="changeText">O amor <span class="typed-text"></span><span class="cursor">&nbsp;</span></h2>
-	<h3 class="bibleText">1 Coríntios 13:7</h3>
+	<div class="changeTextContainer">
+		<h2 class="changeText">O amor <span class="typed-text"></span><span class="cursor">&nbsp;</span></h2>
+		<h3 class="bibleText">1 Coríntios 13:7</h3>
+	</div>
 
 	<script src="script.js"></script>
 </body>

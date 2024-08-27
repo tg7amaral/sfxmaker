@@ -149,8 +149,6 @@ function yes(){
     if (!disabled) {
     disabled = true
     // Loading stage
-    setTimeout(() => {
-      // Completed stage
       setTimeout(() => {
         window.initBurst()
         render()
@@ -161,7 +159,6 @@ function yes(){
           window.location.href = `instagram://user?username=${encodeURIComponent("tiago.invictus")}`;
         }, 3000)
       }, 300)
-    }, 1000)
   }
 }
 
