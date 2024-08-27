@@ -15,12 +15,12 @@ body{
 }
 
 header{
-	width:100%;height:15%;
+	width:100%;height:60px;
 
 	position:relative;
 	left:0px;top:0px;
 
-	margin:0px 0px 0px 0px;padding:20px;
+	margin:0px 0px 0px 0px;padding:15px;
 
 	box-sizing:border-box;
 
@@ -31,10 +31,10 @@ header{
 }
 
 .heartPulse{
-	width:auto;height:calc(100% - 40px);
+	width:auto;height:30px;
 
 	position:absolute;
-	left:20px;top:20px;
+	left:15px;top:15px;
 	margin:0px;
 
 	vertical-align:middle;
@@ -45,10 +45,10 @@ header{
 	z-index:1;
 }
 .heart{
-	width:auto;height:calc(100% - 40px);
+	width:auto;height:30px;
 
 	position:absolute;
-	left:20px;top:20px;
+	left:15px;top:15px;
 	margin:0px;
 
 	vertical-align:middle;
@@ -59,10 +59,10 @@ header{
 	z-index:2;
 }
 .soundPulse{
-	width:auto;height:calc(100% - 40px);
+	width:auto;height:30px;
 
 	position:absolute;
-	right:20px;top:20px;
+	right:15px;top:15px;
 	margin:0px;
 
 	vertical-align:middle;
@@ -71,10 +71,10 @@ header{
 	z-index:1;
 }
 .sound{
-	width:auto;height:calc(100% - 40px);
+	width:auto;height:30px;
 
 	position:absolute;
-	right:20px;top:20px;
+	right:15px;top:15px;
 	margin:0px;
 
 	vertical-align:middle;
@@ -95,11 +95,19 @@ header{
   }
 }
 
+#confetti {
+  height: 100vh;
+  pointer-events: none;
+  position: fixed;
+  width: 100%;
+  z-index: 2;
+}
+
 header > button{
-	width:50%;height:30px;
+	width:calc(100% - 60px);height:30px;
 
 	position:relative;
-	left:25%;top:0px;
+	left:30px;top:0px;
 
 	margin:0px;padding:0px;
 
@@ -160,7 +168,7 @@ canvas{
 	background:#0055FF;
 }
 .purple{
-	padding:0px 0px 0px 14px;
+	padding:0px 14px 0px 14px;
 }
 .purple::selection{
 	background:#5500FF;
