@@ -4,7 +4,10 @@ canvas1.width = canvas1.offsetWidth;
 canvas1.height = canvas1.offsetHeight;
 
 const waves = [];
+var oldWaves = [];
 const waveCount = 20;
+const maxOldWaves = 20;
+const fadeSpeed = 0.02; // Velocidade de desvanecimento das ondas antigas
 
 function getRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -20,7 +23,7 @@ for (let i = 0; i < waveCount; i++) {
     });
 }
 
-function getRandomCoords(xmin, xmax,ymin,ymax, propNumberx,propNumbery) {
+function getRandomCoords(xmin, xmax, ymin, ymax, propNumberx, propNumbery) {
     let randomCoords = {};
     let x = Math.floor(Math.random() * (xmax - xmin + 1)) + xmin;
     let y = Math.floor(Math.random() * (ymax - ymin + 1)) + ymin;
@@ -28,13 +31,13 @@ function getRandomCoords(xmin, xmax,ymin,ymax, propNumberx,propNumbery) {
     let propy = ymax / propNumbery;
 
     if((x < propx || x > xmax - propx) && (y < propy || y > ymax - propy)){
-        randomCoords = getRandomCoords(xmin, xmax,ymin,ymax, propNumberx,propNumbery)
+        randomCoords = getRandomCoords(xmin, xmax, ymin, ymax, propNumberx, propNumbery)
     }else if((x < propx || x > xmax - propx) || (y < propy || y > ymax - propy)){
         randomCoords = getRandom(0,1) === 1
-            ? getRandomCoords(xmin, xmax,ymin,ymax, propNumberx,propNumbery)
-            : randomCoords = {x:x,y:y};
+            ? getRandomCoords(xmin, xmax, ymin, ymax, propNumberx, propNumbery)
+            : randomCoords = {x: x, y: y};
     }else{
-        randomCoords = {x:x,y:y}
+        randomCoords = {x: x, y: y};
     }
 
     return randomCoords;
@@ -42,27 +45,55 @@ function getRandomCoords(xmin, xmax,ymin,ymax, propNumberx,propNumbery) {
 
 function animate() {
     requestAnimationFrame(animate);
-    ctx1.fillStyle = "#0000001A"; // 透明度を0.1に調整
+    ctx1.fillStyle = "#000000";
     ctx1.fillRect(0, 0, canvas1.width, canvas1.height);
 
-    for(var j = 0; j < 10; j++){
-        let coords = getRandomCoords(0,canvas1.width,0, canvas1.height,14,7)
-            ctx1.fillStyle = j % 2 === 1 ? "#0055FF" : "#FFFFFF";
-            ctx1.fillRect(coords.x,coords.y,1,1)
-        }
-
+    // Desenhar ondas atuais
     waves.forEach((wave, index) => {
+      ctx1.beginPath();
+      ctx1.moveTo(0, wave.y);
+      for (let i = 0; i < canvas1.width; i++) {
+          const yOffset = Math.sin(i * wave.length + wave.phase) * wave.amplitude * Math.sin(wave.phase);
+          ctx1.lineTo(i, wave.y + yOffset);
+      }
+      ctx1.strokeStyle = `hsl(${index / 2 + 220}, 100%, 50%)`;
+      ctx1.stroke();
+
+      wave.phase += wave.frequency;
+  });
+
+    // Desenhar ondas antigas
+    oldWaves.forEach((wave, index) => {
         ctx1.beginPath();
         ctx1.moveTo(0, wave.y);
         for (let i = 0; i < canvas1.width; i++) {
             const yOffset = Math.sin(i * wave.length + wave.phase) * wave.amplitude * Math.sin(wave.phase);
             ctx1.lineTo(i, wave.y + yOffset);
         }
-        ctx1.strokeStyle = `hsl(${index / 2 + 220}, 100%, 50%)`;
+        ctx1.strokeStyle = `hsla(${index / 2 + 220}, 100%, ${index % 5 === 1 ? wave.opacity * 100 : wave.opacity * 50}%)`;
         ctx1.stroke();
 
-        wave.phase += wave.frequency;
+        // Reduzir a opacidade da onda antiga
+        wave.opacity -= fadeSpeed;
     });
+
+    // Remover ondas antigas com opacidade baixa
+    oldWaves = oldWaves.filter(wave => wave.opacity > 0);
+
+    // Adicionar novas ondas antigas
+    if (oldWaves.length < maxOldWaves) {
+        const randomWave = waves[getRandom(0, waves.length - 1)];
+        oldWaves.push({
+            y: randomWave.y,
+            length: randomWave.length,
+            amplitude: randomWave.amplitude,
+            frequency: randomWave.frequency,
+            phase: randomWave.phase,
+            opacity: 1 // Começa totalmente visível
+        });
+    }
+
+    
 }
 
 animate();
