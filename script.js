@@ -25,7 +25,7 @@ canvas1.height = canvas1.offsetHeight;
 
 const waves = [];
 const waveCount = 20;
-const subwaveCount = 20; // Número de subondas para criar rastros
+const subwaveCount = 10; // Número de subondas para criar rastros
 
 function getRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -33,10 +33,10 @@ function getRandom(min, max) {
 
 for (let i = 0; i < waveCount; i++) {
     waves.push({
-        y: (canvas1.height / 2) - 10 + Math.random() * 20,
-        length: 0.01 + getRandom(1, 1) / 1000,
-        amplitude: 0.1 + getRandom(70, 75),
-        frequency: 0.025 + getRandom(1, 3) / 250,
+        y: (canvas1.height / 2),
+        length: 10 / 1000,
+        amplitude:80,
+        frequency: getRandom(20,25) / 1000,
         phase: Math.random() * Math.PI * 2,
         subwaves: [] // Adiciona a variável subwaves
     });
@@ -46,7 +46,8 @@ for (let i = 0; i < waveCount; i++) {
         waves[i].subwaves.push({
             amplitude: waves[i].amplitude * (0.5 + Math.random() * 0.5),
             frequency: waves[i].frequency * (0.5 + Math.random() * 0.5),
-            phase: waves[i].phase + Math.random() * Math.PI * 2
+            phase: waves[i].phase + Math.random() * Math.PI * 2,
+            darken: j / subwaveCount // Valor para escurecimento
         });
     }
 }
@@ -65,8 +66,11 @@ function animate() {
                 const yOffset = Math.sin(i * wave.length + wave.phase) * wave.amplitude * Math.sin(wave.phase);
                 ctx1.lineTo(i, wave.y + yOffset);
             }
+
+            // Calcula a cor com base no escurecimento e na opacidade
             const alpha = 1 - (subIndex / subwaveCount) * 0.8; // Ajusta a transparência
-            ctx1.strokeStyle = `hsla(${index / 2 + 220}, 100%, ${index % 5 === 1 ? "75" : "50"}%, ${alpha})`;
+            const darken = 50 - (subwave.darken * 20); // Escurecimento baseado no índice da subonda
+            ctx1.strokeStyle = `hsla(${index / 2 + 220}, 100%, ${darken}%, ${alpha})`;
             ctx1.stroke();
 
             wave.phase += wave.frequency;
@@ -87,11 +91,13 @@ window.addEventListener('resize', () => {
             wave.subwaves.push({
                 amplitude: wave.amplitude * (0.5 + Math.random() * 0.5),
                 frequency: wave.frequency * (0.5 + Math.random() * 0.5),
-                phase: wave.phase + Math.random() * Math.PI * 2
+                phase: wave.phase + Math.random() * Math.PI * 2,
+                darken: j / subwaveCount // Valor para escurecimento
             });
         }
     });
 });
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 
