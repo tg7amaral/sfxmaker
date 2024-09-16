@@ -1,31 +1,10 @@
-// function getRandomCoords(xmin, xmax, ymin, ymax, propNumberx, propNumbery) {
-//     let randomCoords = {};
-//     let x = Math.floor(Math.random() * (xmax - xmin + 1)) + xmin;
-//     let y = Math.floor(Math.random() * (ymax - ymin + 1)) + ymin;
-//     let propx = xmax / propNumberx;
-//     let propy = ymax / propNumbery;
-
-//     if((x < propx || x > xmax - propx) && (y < propy || y > ymax - propy)){
-//         randomCoords = getRandomCoords(xmin, xmax, ymin, ymax, propNumberx, propNumbery)
-//     }else if((x < propx || x > xmax - propx) || (y < propy || y > ymax - propy)){
-//         randomCoords = getRandom(0,1) === 1
-//             ? getRandomCoords(xmin, xmax, ymin, ymax, propNumberx, propNumbery)
-//             : randomCoords = {x: x, y: y};
-//     }else{
-//         randomCoords = {x: x, y: y};
-//     }
-
-//     return randomCoords;
-// }
-
 const canvas1 = document.getElementById('waterCanvas');
 const ctx1 = canvas1.getContext('2d');
 canvas1.width = canvas1.offsetWidth;
 canvas1.height = canvas1.offsetHeight;
 
 const waves = [];
-const waveCount = 20;
-const subwaveCount = 10; // Número de subondas para criar rastros
+const waveCount = 30;
 
 function getRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -33,49 +12,43 @@ function getRandom(min, max) {
 
 for (let i = 0; i < waveCount; i++) {
     waves.push({
-        y: (canvas1.height / 2),
-        length: 10 / 1000,
-        amplitude:80,
-        frequency: getRandom(20,25) / 1000,
-        phase: Math.random() * Math.PI * 2,
-        subwaves: [] // Adiciona a variável subwaves
+        y: (canvas1.height / 2), // 中央付近に分布
+        length: 0.015,
+        amplitude: 70,
+        frequency: getRandom(10,20) / 1000,
+        phase: Math.PI * 2
     });
-    
-    // Cria subondas para cada onda principal
-    for (let j = 0; j < subwaveCount; j++) {
-        waves[i].subwaves.push({
-            amplitude: waves[i].amplitude * (0.5 + Math.random() * 0.5),
-            frequency: waves[i].frequency * (0.5 + Math.random() * 0.5),
-            phase: waves[i].phase + Math.random() * Math.PI * 2,
-            darken: j / subwaveCount // Valor para escurecimento
-        });
-    }
-}
+  }
+
+let alpha = "0.01";
+let ticks = 0;
 
 function animate() {
     requestAnimationFrame(animate);
-    ctx1.fillStyle = "#000000";
+
+    ticks++;
+
+    if(ticks >= 500){
+      alpha = alpha === "0.01" ? "0.05" : "0.01";
+      ticks = 0;
+    }
+
+    ctx1.fillStyle = `rgb(0,0,0,${alpha})`;
     ctx1.fillRect(0, 0, canvas1.width, canvas1.height);
 
     // Desenhar ondas atuais
     waves.forEach((wave, index) => {
-        wave.subwaves.forEach((subwave, subIndex) => {
-            ctx1.beginPath();
-            ctx1.moveTo(0, wave.y);
-            for (let i = 0; i < canvas1.width; i++) {
-                const yOffset = Math.sin(i * wave.length + wave.phase) * wave.amplitude * Math.sin(wave.phase);
-                ctx1.lineTo(i, wave.y + yOffset);
-            }
+      ctx1.beginPath();
+      ctx1.moveTo(0, wave.y);
+      for (let i = 0; i < canvas1.width; i++) {
+          const yOffset = Math.sin(i * wave.length + wave.phase) * wave.amplitude * Math.sin(wave.phase);
+          ctx1.lineTo(i, wave.y + yOffset);
+      }
+      ctx1.strokeStyle = `hsl(${index / 2 + 220}, 100%, 50%)`;
+      ctx1.stroke();
 
-            // Calcula a cor com base no escurecimento e na opacidade
-            const alpha = 1 - (subIndex / subwaveCount) * 0.8; // Ajusta a transparência
-            const darken = 50 - (subwave.darken * 20); // Escurecimento baseado no índice da subonda
-            ctx1.strokeStyle = `hsla(${index / 2 + 220}, 100%, ${darken}%, ${alpha})`;
-            ctx1.stroke();
-
-            wave.phase += wave.frequency;
-        });
-    });
+      wave.phase += wave.frequency;
+  });    
 }
 
 animate();
@@ -84,20 +57,9 @@ window.addEventListener('resize', () => {
     canvas1.width = window.innerWidth;
     canvas1.height = window.innerHeight;
     waves.forEach((wave) => {
-        wave.y = (canvas1.height / 2) - 10 + Math.random() * 20;
-        // Recria subondas após redimensionamento
-        wave.subwaves = [];
-        for (let j = 0; j < subwaveCount; j++) {
-            wave.subwaves.push({
-                amplitude: wave.amplitude * (0.5 + Math.random() * 0.5),
-                frequency: wave.frequency * (0.5 + Math.random() * 0.5),
-                phase: wave.phase + Math.random() * Math.PI * 2,
-                darken: j / subwaveCount // Valor para escurecimento
-            });
-        }
+        wave.y = (canvas1.height / 2) - 100 + Math.random() * 200; // 中央付近に再配置
     });
 });
-
 
 ////////////////////////////////////////////////////////////////////////////////////
 

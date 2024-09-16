@@ -116,9 +116,9 @@ header > button{
 
 	background:none;
 	color:#FFFFFF;
-	font-family:monospace;
+	font-family:Arial;
 	font-weight:normal;
-	font-size:16px;
+	font-size:14px;
 	line-height:30px;
 
 	border:none;
@@ -451,6 +451,7 @@ overflow: hidden;
 .iMissTextBlue{
 	color: #0055FF;
 	text-shadow:0 0 10px #0055FF;
+	font-weight:normal;
 }
 
 .iMissTextBlink{
