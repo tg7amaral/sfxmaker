@@ -6,21 +6,20 @@
 
 	<link rel="stylesheet" type="text/css" href="stylize.css">
 
-	<title>À Ana Júlia</title>
+	<title>À Anna Júlia</title>
 </head>
 <body>
 	<header>
-		<img src="heart.png" class="heartPulse">
-		<img src="heart.png" class="heart">
-		<button>À Ana Júlia</button>
-		<img src="sound.png" class="soundPulse">
-		<img src="sound.png" class="sound" onclick="playMusic()">
+		<img src="heart.svg" class="heartPulse">
+		<img src="heart.svg" class="heart">
+		<button>À <span class="titleLabel">Anna Júlia</span></button>
 
 		<audio id="music" src="music.mp3" style="display:none"></audio>
 	</header>
 
 	<canvas id="waterCanvas"></canvas>
-	<h1 class="titleCanvas">Você aceita tomar<span class="purple">açaí</span> comigo?</h1>
+	<h1 class="titleCanvas">Você aceita sair comigo?</h1>
+	<p class="textCanvas">Data:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Quando Você quiser<br>Horário: O que der para Você<br><br>Te amo! Por favor, aceita &#x1F97A</p>
 
 	<canvas id="confetti"></canvas>
 
@@ -28,7 +27,7 @@
 		<section class="buttonsContainer">
 			<button class="liquidButton" onclick="yes()">
 			  <span>Sim</span>
-			  <div class="liquid" /></div>
+			  <div class="liquid"/></div>
 			</button>
 			<button class="negativeButton">
 			  <span><s>Não</s></span>
@@ -37,12 +36,9 @@
 		</section>
 	</section>
 
-	<div class="changeTextContainer">
-		<h2 class="changeText">O amor <span class="typed-text"></span><span class="cursor">&nbsp;</span></h2>
-		<h3 class="bibleText">1 Coríntios 13:7</h3>
-	</div>
-	<div class="iMissTextContainer">
-		<h2 class="iMissText">Todo final de semana sinto <span class="iMissTextBlue">s<span class="iMissTextBlink">a</span>u<span class="iMissTextBlink">d</span>a<span class="iMissTextBlink">de</span></span></h2>
+	<div class="BibleContainer">
+		<h2 class="BibleText">O amor <span class="typed-text"></span><span class="cursor">&nbsp;</span></h2>
+		<h3 class="BibleBook">1 Coríntios 13:7</h3>
 	</div>
 
 	<script src="script.js"></script>

@@ -35,8 +35,9 @@ header{
 
 	position:absolute;
 	left:15px;top:15px;
-	margin:0px;
+	margin:0px;padding:3px;
 
+	box-sizing:border-box;
 	vertical-align:middle;
 	border-radius:0px;
 
@@ -49,34 +50,9 @@ header{
 
 	position:absolute;
 	left:15px;top:15px;
-	margin:0px;
+	margin:0px;padding:3px;
 
-	vertical-align:middle;
-	border-radius:0px;
-
-	filter:drop-shadow(0px 0px 5px #0055FF70);
-
-	z-index:2;
-}
-.soundPulse{
-	width:auto;height:30px;
-
-	position:absolute;
-	right:15px;top:15px;
-	margin:0px;
-
-	vertical-align:middle;
-	border-radius:0px;
-
-	z-index:1;
-}
-.sound{
-	width:auto;height:30px;
-
-	position:absolute;
-	right:15px;top:15px;
-	margin:0px;
-
+	box-sizing:border-box;
 	vertical-align:middle;
 	border-radius:0px;
 
@@ -125,6 +101,15 @@ header > button{
 	border-radius:0px;
 
 	text-shadow:0 0 10px #FFFFFF70;
+}
+
+.titleLabel{
+	background:#0055FF;
+	text-shadow:0px 0px 10px #FFFFFF;
+	box-shadow:0px 0px 10px #0055FF60;
+	padding:3px 6px;
+	border-radius:4px;
+	margin:0px 0px 0px 5px;
 }
 
 .spacer{
@@ -189,8 +174,36 @@ canvas{
 	font-family: monospace, sans-serif;
   font-weight: bold;
   font-style: normal;
-	font-size:25px;
+	font-size:28px;
 	line-height:30px;
+	text-align:center;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	flex-wrap:wrap;
+
+	border:none;
+	border-radius:0px;
+	text-shadow:0 0 10px #FFFFFF40;
+}
+.textCanvas{
+	width:100%;height:64px;
+
+	position:relative;
+	left:0px;top:0px;
+
+	margin:0px;padding:0px;
+
+	box-sizing:border-box;
+
+	background:none;
+	color:#FFFFFF;
+
+	font-family:monospace,sans-serif;
+   font-weight:normal;
+   font-style:normal;
+	font-size:14px;
+	line-height:16px;
 	text-align:center;
 	display:flex;
 	align-items:center;
@@ -304,12 +317,12 @@ overflow: hidden;
       }
       .liquidButton > div::before {
         border-radius: 45%;
-        background: #0022CCFF;
+        background: #0033CCFF;
         animation: liquidAnimation 10s linear infinite;
       }
       .liquidButton > div::after {
         border-radius: 40%;
-        background: #0022CC77;
+        background: #0033CC77;
         animation: liquidAnimation 10s linear infinite;
       }
       @keyframes liquidAnimation {
@@ -321,10 +334,10 @@ overflow: hidden;
         }
       }
 
-.changeTextContainer{
+.BibleContainer{
 	width:100%;height:68px;
 
-	position:relative;
+	position:absolute;
 	left:0px;bottom:0px;
 
 	margin:40px 0px 0px 0px;padding:0px 0px 20px 0px;
@@ -335,7 +348,7 @@ overflow: hidden;
 	border:none;
 	border-radius:0px;
 }
-.changeText{
+.BibleText{
 	width:100%;height:30px;
 
 	position:relative;
@@ -359,8 +372,7 @@ overflow: hidden;
 	border-radius:0px;
 	text-shadow:0 0 10px #FFFFFF40;
 }
-
-.bibleText{
+.BibleBook{
 	width:100%;height:18px;
 
 	position:relative;
@@ -385,12 +397,12 @@ overflow: hidden;
 	text-shadow:0 0 10px #FFFFFF40;
 }
 
-.changeText span.typed-text{
+.BibleText span.typed-text{
   font-weight: normal;
   color: #0055FF;
   text-shadow:0 0 10px #0055FFA0;
 }
-.changeText span.cursor {
+.BibleText span.cursor {
   display: inline-block;
   background-color: #0055FF;
   margin-left: 0.1rem;
@@ -398,7 +410,7 @@ overflow: hidden;
   animation: blink 1s infinite;
   box-shadow:0 0 10px #0055FFA0;
 }
-.changeText span.cursor.typing {
+.BibleText span.cursor.typing {
   animation: none;
 }
 @keyframes blink {
@@ -407,6 +419,68 @@ overflow: hidden;
   50% { background-color: transparent;box-shadow:none; }
   99% { background-color: transparent;box-shadow:none; }
   100%  { background-color: #0055FF;box-shadow:0 0 10px #0055FFA0; }
+}
+#letterContainer{
+	width:100%;height:auto;
+
+	position:relative;
+	left:0px;top:0px;
+
+	margin:0px;padding:0px;
+	box-sizing:border-box;
+
+	background:none;
+
+	border:none;
+	border-radius:0px;
+}
+
+.letterBackground{
+	width:100%;height:100%;
+
+	position:absolute;
+	left:0px;top:0px;
+
+	margin:0px;padding:0px;
+	box-sizing:border-box;
+
+	background:none;
+
+	border:none;
+	border-radius:0px;
+	z-index:1;
+}
+
+.letterBackground01{
+	width:100%;height:auto;
+
+	position:relative;
+	left:0px;top:0px;
+
+	margin:0px;padding:0px;
+	box-sizing:border-box;
+
+	background:none;
+
+	border:none;
+	border-radius:0px;
+	display:block;
+}
+
+.letter{
+	width:100%;height:100%;
+
+	position:absolute;
+	left:0px;top:0px;
+
+	margin:0px;padding:0px;
+	box-sizing:border-box;
+
+	background:none;
+
+	border:none;
+	border-radius:0px;
+	z-index:2;
 }
 
 .iMissTextContainer{
