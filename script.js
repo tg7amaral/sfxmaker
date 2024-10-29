@@ -284,15 +284,13 @@ render = () => {
 };
 
 function yes(){
-  navigator.vibrate([100,50,100]);
-
   if (!disabled) {
   disabled = true
   // Loading stage
     setTimeout(() => {
       window.initBurst()
       render()
-      navigator.vibrate([2000]);
+      navigator.vibrate([100,50,100,200,1000]);
       setTimeout(() => {
         // Reset button so user can select it again
         disabled = false;
