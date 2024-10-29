@@ -66,7 +66,7 @@ header{
     opacity:1.0;
   }
   100%{
-  	transform:scale(1.5);
+  	transform:scale(1.75);
   	opacity:0.0;
   }
 }
@@ -112,25 +112,6 @@ header > button{
 	margin:0px 0px 0px 5px;
 }
 
-.spacer{
-	width:100%;height:40px;
-
-	position:relative;
-	left:0px;top:0px;
-
-	margin:0px;padding:0px;
-
-	box-sizing:border-box;
-
-	background:linear-gradient(180deg,#0A0A0A,#000000);
-
-	border:none;
-	border-radius:0px;
-}
-.spacerbottom{
-	background:linear-gradient(180deg,#000000,#0A0A0A);
-}
-
 canvas{
 	width:100%;height:200px;
 
@@ -147,17 +128,10 @@ canvas{
 	border-radius:0px;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
-
 .titleCanvas::selection{
 	background:#0055FF;
 }
-.purple{
-	padding:0px 14px 0px 14px;
-}
-.purple::selection{
-	background:#5500FF;
-}
+
 .titleCanvas{
 	width:100%;height:200px;
 
@@ -335,7 +309,7 @@ overflow: hidden;
       }
 
 .BibleContainer{
-	width:100%;height:76px;
+	width:100%;height:48px;
 
 	position:absolute;
 	left:0px;bottom:10px;
@@ -419,125 +393,4 @@ overflow: hidden;
   50% { background-color: transparent;box-shadow:none; }
   99% { background-color: transparent;box-shadow:none; }
   100%  { background-color: #0055FF;box-shadow:0 0 10px #0055FFA0; }
-}
-#letterContainer{
-	width:100%;height:auto;
-
-	position:relative;
-	left:0px;top:0px;
-
-	margin:0px;padding:0px;
-	box-sizing:border-box;
-
-	background:none;
-
-	border:none;
-	border-radius:0px;
-}
-
-.letterBackground{
-	width:100%;height:100%;
-
-	position:absolute;
-	left:0px;top:0px;
-
-	margin:0px;padding:0px;
-	box-sizing:border-box;
-
-	background:none;
-
-	border:none;
-	border-radius:0px;
-	z-index:1;
-}
-
-.letterBackground01{
-	width:100%;height:auto;
-
-	position:relative;
-	left:0px;top:0px;
-
-	margin:0px;padding:0px;
-	box-sizing:border-box;
-
-	background:none;
-
-	border:none;
-	border-radius:0px;
-	display:block;
-}
-
-.letter{
-	width:100%;height:100%;
-
-	position:absolute;
-	left:0px;top:0px;
-
-	margin:0px;padding:0px;
-	box-sizing:border-box;
-
-	background:none;
-
-	border:none;
-	border-radius:0px;
-	z-index:2;
-}
-
-.iMissTextContainer{
-	width:100%;height:68px;
-
-	position:relative;
-	left:0px;bottom:0px;
-
-	margin:0px;padding:0px 0px 20px 0px;
-	box-sizing:border-box;
-
-	background:none;
-
-	border:none;
-	border-radius:0px;
-}
-.iMissText{
-	width:100%;height:30px;
-
-	position:relative;
-	left:0px;top:0px;
-
-	margin:0px;padding:0px 20px 0px 20px;
-
-	box-sizing:border-box;
-
-	background:none;
-	color:#FFFFFF;
-
-	font-family: monospace, sans-serif;
-  font-weight: bold;
-  font-style: normal;
-	font-size:25px;
-	line-height:30px;
-	text-align:center;
-
-	border:none;
-	border-radius:0px;
-	text-shadow:0 0 10px #FFFFFF40;
-}
-
-.iMissTextBlue{
-	color: #0055FF;
-	text-shadow:0 0 10px #0055FF;
-	font-weight:normal;
-}
-
-.iMissTextBlink{
-	color: #0055FF;
-	text-shadow:0 0 10px #0055FF;
-	animation: iMissBlink 5s steps(1,end) infinite;
-}
-
-@keyframes iMissBlink {
-  0%  { color: #0055FF;text-shadow:0 0 10px #0055FF; }
-  40% { color: #101010;text-shadow:0 0 10px #101010; }
-  45% { color: #0055FF;text-shadow:0 0 10px #0055FF; }
-  50% { color: #101010;text-shadow:0 0 10px #101010; }
-  100% { color: #0055FF;text-shadow:0 0 10px #0055FF; }
 }
