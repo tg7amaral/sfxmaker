@@ -26,7 +26,7 @@ function renderPage(letterIndex){
 
       <canvas id="waterCanvas"></canvas>
       <h1 class="titleCanvas">Você aceita sair comigo?</h1>
-      <p class="textCanvas">Data:&nbsp;&nbsp;Na que der para você<br>Horário: No que você quiser<br><br>Aceita, por favor. Te amo &#x1F97A</p>
+      <p class="textCanvas">Data:&nbsp;&nbsp;Na que der para você<br>Horário: No que você quiser<br><br>Aceita, por favor! Te amo &#x1F97A</p>
 
       <canvas id="confetti"></canvas>
 
