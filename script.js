@@ -26,7 +26,7 @@ function renderPage(letterIndex){
 
       <canvas id="waterCanvas"></canvas>
       <h1 class="titleCanvas">Você aceita sair comigo?</h1>
-      <p class="textCanvas">Data:&nbsp;&nbsp;Na que der para você<br>Horário: No que você quiser<br><br>Aceita, por favor! Te amo &#x1F97A</p>
+      <p class="textCanvas">Data:&nbsp;&nbsp;Na que der para você<br>Horário: No que você quiser</p>
 
       <canvas id="confetti"></canvas>
 
@@ -42,6 +42,30 @@ function renderPage(letterIndex){
           <div class="liquidButtonShadow"></div>
         </section>
       </section>
+
+      <h2 class="letterTitle">Fevereiro de 2022</h2>
+      <p class="letterText">Meus amigos me convenceram a ficar na sala do oitavo ano. Quando fui descoberto, fui para sua sala. Lembro de você, Gabriela e Viviane. Por algum motivo, achei que vocês eram irmãs. Você veio falar algo a respeito da Viviane, mas eu não me lembro bem, é só mais uma memória apagada</p>
+      <p class="letterText">Esse dia foi o maior presente de Deus na minha vida; dinheiro nenhum compraria o prazer que foi te conhecer. Fui tão sortudo em te conhecer que sinto que posso ser atingido por um raio a qualquer instante devido ao azar que tenho, para compensar essa sorte</p>
+      <p class="letterText">Acho que um dia você disse, no Instagram se não me engano, que iria trazer um chocolate para mim, e você realmente trouxe. Quem diria que eu ia retribuir 10 vezes mais?</p>
+      <p class="letterText">E até então, quanto a você, eu era indiferente</p>
+
+      <h2 class="letterTitle">Outubro de 2023</h2>
+      <p class="letterText">Eu estava sentado com o Dentin, o João Pedro, na mesa do professor. Ele me desafiou a fazer uma cantada para você. Nesse momento, eu comecei a te olhar diferente, pois minha memória desse momento é clara como a luz do sol. Eu te chamei e disse: "Você, quando tá de longe, é linda, e quando tá perto parece que tá de longe." Acho que você só agradeceu</p>
+      <p class="letterText">Eu acho que, se eu pudesse voltar no tempo, mesmo que 15 milhões de vezes, eu nunca mudaria nada nesse dia. O melhor dia da minha vida até agora</p>
+
+      <h2 class="letterTitle">A partir de 2024</h2>
+      <p class="letterText">Acho que, após isso, eu comecei a fazer várias cantadas de forma massante. Só parei quando percebi o quanto eu estava sendo insuportável; aliás, desculpa por isso</p>
+      <p class="letterText">Depois disso, pedi ajuda ao Matheus para ter ideia do que fazer. Ele me deu a ideia de fazer cartas. Acho que nas primeiras eu falava muito do seu sorriso, que de fato acho lindo</p>
+      <p class="letterText">Depois, escrevi uma carta pequena com a frase: "E minha chance? Nada ainda? - Admirador secreto", com um chiclete grudado. Lembro que você falou que achou sem criatividade. E esse convite, você achou criativo?</p>
+      <p class="letterText">Depois, pedi para a Isis entregar uma carta com algo como: "Sei que você já disse várias vezes que não quer me dar uma chance, mas deixa eu te fazer feliz." Tinha um Stikadinho nessa carta, e eu acho que sua reação foi positiva, mas não lembro. A partir daí, comecei a te entregar várias cartas, e nenhuma delas foi sem um chocolate. Para ser sincero, acho que a maioria dessas cartas com chocolate eu entreguei só por entregar, só com o intuito de te deixar feliz</p>
+      <p class="letterText">E agora, no final de outubro, estou te entregando este convite...</p>
+
+      <h2 class="letterTitle">Novembro de 2024</h2>      
+      <p class="letterText">Agora estou te fazendo este convite para que, se for da sua vontade, a gente possa conversar melhor, sem o clima estressante da escola. Não especifiquei nenhuma data e nenhum horário, porque sei que você mora longe, então isso não está sob meu controle</p>
+      <p class="letterText">Eu te amo de verdade, então, se você aceitar este convite, ficarei muito feliz, você sabe. Você tem o sorriso mais lindo que já vi em toda minha vida, então, mesmo que você não aceite, desde que isso tire um sorriso seu, eu já estou satisfeito. Não conheço ninguém que tenha um carisma como o seu. Tudo em você é lindo: seu nariz, sua altura e principalmente seu cabelo, mas isso é só detalhe</p>
+      <p class="letterText">Você conhece alguém que faria algo assim por você? Se sim, por que não fez? Por favor, dê valor às minhas palavras. Tudo o que fiz para você tem valido a pena, porque foi para você. Então, por favor, pense em aceitar</p>
+      <p class="letterText">Te conhecer foi um presente de Deus. Desejo de coração que Deus te ilumine no querer e no realizar, para que todos os seus sonhos se realizem. Deus abençoe você e sua família</p>
+      <div class="spacer"></div>
 
       <div class="BibleContainer">
         <h2 class="BibleText">O amor <span class="typed-text"></span><span class="cursor">&nbsp;</span></h2>

@@ -161,7 +161,7 @@ canvas{
 	text-shadow:0 0 10px #FFFFFF40;
 }
 .textCanvas{
-	width:100%;height:64px;
+	width:100%;height:32px;
 
 	position:relative;
 	left:0px;top:0px;
@@ -194,7 +194,7 @@ canvas{
 	position:relative;
 
 	left:0px;top:0px;
-	margin:40px 0px 0px 0px;padding:0px;
+	margin:40px 0px 20px 0px;padding:0px;
 
 	display:inline-flex;
 	justify-content:center;
@@ -309,15 +309,16 @@ overflow: hidden;
       }
 
 .BibleContainer{
-	width:100%;height:48px;
+	width:100%;height:58px;
 
-	position:absolute;
-	left:0px;bottom:10px;
+	position:fixed;
+	left:0px;bottom:0px;
 
-	margin:40px 0px 0px 0px;padding:0px;
+	margin:40px 0px 0px 0px;padding:5px 0px 0px 0px;
 	box-sizing:border-box;
 
-	background:none;
+	background:#10101040;
+	backdrop-filter:blur(1px);
 
 	border:none;
 	border-radius:0px;
@@ -393,4 +394,66 @@ overflow: hidden;
   50% { background-color: transparent;box-shadow:none; }
   99% { background-color: transparent;box-shadow:none; }
   100%  { background-color: #0055FF;box-shadow:0 0 10px #0055FFA0; }
+}
+
+.letterTitle{
+	width:100%;height:42px;
+
+	position:relative;
+	left:0px;top:0px;
+
+	margin:0px;padding:0px 20px 10px 20px;
+
+	box-sizing:border-box;
+
+	background:none;
+	color:#0055FF;
+
+	font-family:monospace,sans-serif;
+   font-weight:1000;
+   font-style:normal;
+	font-size:25px;
+	line-height:32px;
+	flex-wrap:wrap;
+
+	border:none;
+	border-radius:0px;
+	text-shadow:0 0 10px #0055FF70;
+}
+
+.letterText{
+	width:100%;height:auto;
+
+	position:relative;
+	left:0px;top:0px;
+
+	margin:0px;padding:0px 20px 20px 20px;
+
+	box-sizing:border-box;
+
+	background:none;
+	color:#FFFFFF;
+
+	font-family:monospace,sans-serif;
+   font-weight:normal;
+   font-style:normal;
+	font-size:14px;
+	line-height:16px;
+	flex-wrap:wrap;
+
+	border:none;
+	border-radius:0px;
+	text-shadow:0 0 10px #FFFFFF40;
+}
+
+.spacer{
+	width:100%;height:100px;
+
+	position:relative;
+	left:0px;top:0px;
+
+	margin:0px;padding:0px;
+
+	box-sizing:border-box;
+	border:none;
 }
