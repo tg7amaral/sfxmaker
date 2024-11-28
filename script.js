@@ -319,7 +319,7 @@ function yes(){
         // Reset button so user can select it again
         disabled = false;
 
-        window.location.href = `instagram://user?username=${encodeURIComponent("tiago.invictus")}`;
+        window.location.href = `instagram://user?username=${encodeURIComponent("tiago.xeke")}`;
       }, 3000)
     }, 300)
 }

@@ -309,19 +309,19 @@ overflow: hidden;
       }
 
 .BibleContainer{
-	width:100%;height:58px;
+	width:90%;height:58px;
 
 	position:fixed;
-	left:0px;bottom:0px;
+	left:5%;bottom:5px;
 
 	margin:40px 0px 0px 0px;padding:5px 0px 0px 0px;
 	box-sizing:border-box;
 
-	background:#10101040;
+	background:#000000A0;
 	backdrop-filter:blur(1px);
 
 	border:none;
-	border-radius:0px;
+	border-radius:58px;
 }
 .BibleText{
 	width:100%;height:30px;
