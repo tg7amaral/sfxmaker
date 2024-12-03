@@ -11,6 +11,7 @@ function drawVisualization(analyser, dataArray) {
 
     // Array para armazenar os círculos
     const circles = [];
+    const texts = [];
 
     function draw() {
         requestAnimationFrame(draw);
@@ -57,6 +58,30 @@ function drawVisualization(analyser, dataArray) {
             // Remove círculos que desapareceram
             if (circle.alpha <= 0) {
                 circles.splice(i, 1);
+            }
+        }
+
+        for (let i = texts.length - 1; i >= 0; i--) {
+            const text = texts[i];
+
+            // Atualiza a posição do círculo
+            text.x += text.speedX;
+            text.y += text.speedY;
+            text.alpha -= text.fade; // Decrementa a opacidade mais rapidamente
+
+            // Desenha o círculo com sombra branca
+            ctx.shadowColor = `rgba(${text.color[0]}, ${text.color[1]}, ${text.color[2]}, 0.5)`; // Cor da sombra
+            ctx.shadowBlur = 10; // Desfoque da sombra
+            ctx.shadowOffsetX = 0; // Sem deslocamento
+            ctx.shadowOffsetY = 0; // Sem deslocamento
+
+            ctx.font = `${text.size}px Arial`;
+            ctx.fillStyle = `rgba(${text.color[0]}, ${text.color[1]}, ${text.color[2]}, ${text.alpha})`;
+            ctx.fillText(text.data, text.x, text.y);
+
+            // Remove círculos que desapareceram
+            if (text.alpha <= 0) {
+                texts.splice(i, 1);
             }
         }
 
@@ -110,6 +135,17 @@ function drawVisualization(analyser, dataArray) {
                 color:[255,255,255],fade:0.025
             };
             circles.push(circle);
+            const text = {
+                x: canvas.width / 2 + (Math.random() * canvas.width - canvas.width / 2), // Posição aleatória na largura
+                y: (smoothDataArray[0] * canvas.height) / 4 + canvas.height / 2, // Y igual ao Y da onda
+                size: Math.random() * 10 + 7, // Raio entre 2 e 5 (círculos menores)
+                alpha: 1, // Opacidade inicial
+                speedX: (Math.random() - 0.5) * 1, // Velocidade em X, proporcional à intensidade do grave
+                speedY: (Math.random() - 0.5) * 1, // Velocidade em Y, constante
+                color:[255,255,255],fade:0.1,data:"Anna Júlia"
+            };
+            texts.push(text);
+            ticks++;
             navigator.vibrate([100]);
         }else if (bassIntensity / 8 > 70 && bassIntensity / 8 < 170) { // Aumentando o limite para detectar graves
             // Adiciona um novo círculo
@@ -118,11 +154,21 @@ function drawVisualization(analyser, dataArray) {
                 y: (smoothDataArray[0] * canvas.height) / 4 + canvas.height / 2, // Y igual ao Y da onda
                 radius: Math.random() * 2 + 2, // Raio entre 2 e 5 (círculos menores)
                 alpha: 1, // Opacidade inicial
-                speedX: (Math.random() - 0.5) * 5, // Velocidade em X, proporcional à intensidade do grave
-                speedY: (Math.random() - 0.5) * 5, // Velocidade em Y, constante
+                speedX: (Math.random() - 0.5) * 1, // Velocidade em X, proporcional à intensidade do grave
+                speedY: (Math.random() - 0.5) * 1, // Velocidade em Y, constante
                 color:[255,0,53],fade:0.1
             };
             circles.push(circle);
+            const text = {
+                x: canvas.width / 2 + (Math.random() * canvas.width - canvas.width / 2), // Posição aleatória na largura
+                y: (smoothDataArray[0] * canvas.height) / 4 + canvas.height / 2, // Y igual ao Y da onda
+                size: Math.random() * 7 + 5, // Raio entre 2 e 5 (círculos menores)
+                alpha: 1, // Opacidade inicial
+                speedX: (Math.random() - 0.5) * 5, // Velocidade em X, proporcional à intensidade do grave
+                speedY: (Math.random() - 0.5) * 5, // Velocidade em Y, constante
+                color:[255,0,53],fade:0.1,data:"Te amo"
+            };
+            texts.push(text);
         }
     }
 

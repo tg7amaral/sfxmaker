@@ -13,6 +13,7 @@ const confettiCount = 100
     var button;
 
     let alpha = "0.01";
+    let ticks = 0;
 
 function renderPage(letterIndex){
   switch(letterIndex){
@@ -28,7 +29,7 @@ function renderPage(letterIndex){
 
       <canvas id="waterCanvas"></canvas>
       <h1 class="titleCanvas">Você aceita sair comigo?</h1>
-      <p class="textCanvas">Não é possível que você vai deixar tudo acabar aqui...<br><br>"Se, para você, um dia é como mil anos,<br>então esperarei mais um dia"</p>
+      <p class="textCanvas">Não é possível que você vai deixar tudo acabar aqui...<br><br>"Se, para você um dia é como mil anos,<br>te esperarei mais um dia"</p>
 
       <canvas id="confetti"></canvas>
 
@@ -75,17 +76,14 @@ function renderPage(letterIndex){
             phase: Math.PI * 2
         });
       }
-    let ticks = 0;
 
     function animate() {
         requestAnimationFrame(animate);
 
-        ticks++;
-
-        // if(ticks >= 500){
-        //   alpha = alpha === "0.01" ? "0.05" : "0.01";
-        //   ticks = 0;
-        // }
+        if(ticks >= 10){
+          alpha = alpha === "0.01" ? "0.05" : "0.01";
+          ticks = 0;
+        }
 
         ctx1.fillStyle = `rgb(0,0,0,${alpha})`;
         ctx1.fillRect(0, 0, canvas1.width, canvas1.height);
