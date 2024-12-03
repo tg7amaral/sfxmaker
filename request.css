@@ -1,0 +1,195 @@
+canvas{
+	width:100%;height:200px;
+
+	position:relative;
+	left:0px;top:0px;
+
+	margin:0px;padding:0px;
+
+	box-sizing:border-box;
+
+	background:none;
+
+	border:none;
+	border-radius:0px;
+}
+
+.titleCanvas::selection{
+	background:#FF0035;
+}
+
+.titleCanvas{
+	width:100%;height:200px;
+
+	position:absolute;
+	left:0px;top:60px;
+
+	margin:0px;padding:70px 20px 70px 20px;
+
+	box-sizing:border-box;
+
+	background:none;
+	color:#FFFFFF;
+
+	font-family: monospace, sans-serif;
+  font-weight: bold;
+  font-style: normal;
+	font-size:28px;
+	line-height:30px;
+	text-align:center;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	flex-wrap:wrap;
+
+	border:none;
+	border-radius:0px;
+	text-shadow:0 0 10px #FFFFFF40;
+}
+.textCanvas{
+	width:90%;height:auto;
+
+	position:relative;
+	left:5%;top:0px;
+
+	margin:0px;padding:0px;
+
+	box-sizing:border-box;
+
+	background:none;
+	color:#FFFFFF;
+
+	font-family:monospace,sans-serif;
+   font-weight:normal;
+   font-style:normal;
+	font-size:14px;
+	line-height:16px;
+	text-align:center;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	flex-wrap:wrap;
+
+	border:none;
+	border-radius:0px;
+	text-shadow:0 0 10px #FFFFFF40;
+}
+.mainButtonsContainer{
+	width:100%;height:80px;
+
+	position:relative;
+
+	left:0px;top:0px;
+	margin:30px 0px 20px 0px;padding:0px;
+
+	display:inline-flex;
+	justify-content:center;
+	align-items:center;
+}
+
+.buttonsContainer{
+	width:100%;height:80px;
+	max-width:350px;
+
+	position:relative;
+
+	left:0px;top:0px;
+	margin:0px;padding:0px;
+}
+.negativeButton{
+   position: relative;
+  display: inline-block;
+  padding: 0px;
+  margin: 0px 0px 0px 10px;
+  color: #202020;
+  font-size: 25px;
+  line-height:35px;
+  font-family: monospace;
+  border-radius: 5px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  width:calc(30% - 30px);
+  height:40px;
+  box-sizing: border-box;
+overflow: hidden;
+background:#101010;
+   
+}
+.liquidButton{
+   position: relative;
+  display: inline-block;
+  padding: 0px;
+  margin: 0px 0px 0px 20px;
+  color: #fff;
+  font-size: 25px;
+  line-height:35px;
+  font-family: monospace;
+  font-weight:1000;
+  border-radius: 5px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  width:calc(70% - 20px);
+  height:40px;
+  box-sizing: border-box;
+overflow: hidden;
+    box-shadow:-10px 7px 10px -5px #FF003520,10px 7px 10px -5px #FF003520;
+    text-shadow:0 0 10px #FFFFFFA0;
+   
+}
+.liquidButtonShadow {
+  position: absolute;
+  top: 40px;
+  left: 20px;
+  width: calc(70% - 10px);
+  height: 40px;
+	transform: perspective(50px) rotateX(45deg) scale(0.7, 0.3);
+  filter: blur(40px);
+  opacity: 0.7;
+  pointer-events: none;
+  background:#FF0035;
+}
+    .liquidButton > span {
+    	height:35px;
+      position: relative;
+      z-index: 1;
+    }
+.liquidButton > div {
+      position: absolute;
+      top: -100px;
+      left: 0;
+      width: 100%;
+      height: 200px;
+      background: #FF0035;
+      box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+      transition: 0.5s;
+}
+      .liquidButton > div::before,
+      .liquidButton > div::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 200%;
+        height: 200%;
+        transform: translate(-50%, -75%);
+      }
+      .liquidButton > div::before {
+        border-radius: 45%;
+        background: #DD0035FF;
+        animation: liquidAnimation 10s linear infinite;
+      }
+      .liquidButton > div::after {
+        border-radius: 40%;
+        background: #CC003577;
+        animation: liquidAnimation 10s linear infinite;
+      }
+      @keyframes liquidAnimation {
+        0% {
+          transform: translate(-50%, -75%) rotate(0deg);
+        }
+        100% {
+          transform: translate(-50%, -75%) rotate(360deg);
+        }
+      }

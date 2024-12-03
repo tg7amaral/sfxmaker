@@ -14,307 +14,13 @@ body{
 	font-size:0px;
 }
 
-header{
-	width:100%;height:60px;
-
-	position:relative;
-	left:0px;top:0px;
-
-	margin:0px 0px 0px 0px;padding:15px;
-
-	box-sizing:border-box;
-
-	background:none;
-
-	border:none;
-	border-radius:0px;
-}
-
-.heartPulse{
-	width:auto;height:30px;
-
-	position:absolute;
-	left:15px;top:15px;
-	margin:0px;padding:3px;
-
-	box-sizing:border-box;
-	vertical-align:middle;
-	border-radius:0px;
-
-	animation:pulse 1.5s ease infinite;
-
-	z-index:1;
-}
-.heart{
-	width:auto;height:30px;
-
-	position:absolute;
-	left:15px;top:15px;
-	margin:0px;padding:3px;
-
-	box-sizing:border-box;
-	vertical-align:middle;
-	border-radius:0px;
-
-	filter:drop-shadow(0px 0px 5px #0055FF70);
-
-	z-index:2;
-}
-@keyframes pulse {
-  0%{
-    transform:scale(1);
-    opacity:1.0;
-  }
-  100%{
-  	transform:scale(1.75);
-  	opacity:0.0;
-  }
-}
-
-#confetti {
-  height: 100vh;
-  pointer-events: none;
-  position: fixed;
-  width: 100%;
-  z-index: 2;
-}
-
-header > button{
-	width:calc(100% - 60px);height:30px;
-
-	position:relative;
-	left:30px;top:0px;
-
-	margin:0px;padding:0px;
-
-	box-sizing:border-box;
-	vertical-align:middle;
-
-	background:none;
-	color:#FFFFFF;
-	font-family:Arial;
-	font-weight:normal;
-	font-size:14px;
-	line-height:30px;
-
-	border:none;
-	border-radius:0px;
-
-	text-shadow:0 0 10px #FFFFFF70;
-}
-
-.titleLabel{
-	background:#0055FF;
-	text-shadow:0px 0px 10px #FFFFFF;
-	box-shadow:0px 0px 10px #0055FF60;
-	padding:3px 6px;
-	border-radius:4px;
-	margin:0px 0px 0px 5px;
-}
-
-canvas{
-	width:100%;height:200px;
-
-	position:relative;
-	left:0px;top:0px;
-
-	margin:0px;padding:0px;
-
-	box-sizing:border-box;
-
-	background:none;
-
-	border:none;
-	border-radius:0px;
-}
-
-.titleCanvas::selection{
-	background:#0055FF;
-}
-
-.titleCanvas{
-	width:100%;height:200px;
-
-	position:absolute;
-	left:0px;top:60px;
-
-	margin:0px;padding:70px 20px 70px 20px;
-
-	box-sizing:border-box;
-
-	background:none;
-	color:#FFFFFF;
-
-	font-family: monospace, sans-serif;
-  font-weight: bold;
-  font-style: normal;
-	font-size:28px;
-	line-height:30px;
-	text-align:center;
-	display:flex;
-	align-items:center;
-	justify-content:center;
-	flex-wrap:wrap;
-
-	border:none;
-	border-radius:0px;
-	text-shadow:0 0 10px #FFFFFF40;
-}
-.textCanvas{
-	width:100%;height:32px;
-
-	position:relative;
-	left:0px;top:0px;
-
-	margin:0px;padding:0px;
-
-	box-sizing:border-box;
-
-	background:none;
-	color:#FFFFFF;
-
-	font-family:monospace,sans-serif;
-   font-weight:normal;
-   font-style:normal;
-	font-size:14px;
-	line-height:16px;
-	text-align:center;
-	display:flex;
-	align-items:center;
-	justify-content:center;
-	flex-wrap:wrap;
-
-	border:none;
-	border-radius:0px;
-	text-shadow:0 0 10px #FFFFFF40;
-}
-.mainButtonsContainer{
-	width:100%;height:80px;
-
-	position:relative;
-
-	left:0px;top:0px;
-	margin:40px 0px 20px 0px;padding:0px;
-
-	display:inline-flex;
-	justify-content:center;
-	align-items:center;
-}
-
-.buttonsContainer{
-	width:100%;height:80px;
-	max-width:350px;
-
-	position:relative;
-
-	left:0px;top:0px;
-	margin:0px;padding:0px;
-}
-.negativeButton{
-   position: relative;
-  display: inline-block;
-  padding: 0px;
-  margin: 0px 0px 0px 10px;
-  color: #202020;
-  font-size: 25px;
-  line-height:35px;
-  font-family: monospace;
-  border-radius: 5px;
-  outline: none;
-  border: none;
-  cursor: pointer;
-  width:calc(30% - 30px);
-  height:40px;
-  box-sizing: border-box;
-overflow: hidden;
-background:#101010;
-   
-}
-.liquidButton{
-   position: relative;
-  display: inline-block;
-  padding: 0px;
-  margin: 0px 0px 0px 20px;
-  color: #fff;
-  font-size: 25px;
-  line-height:35px;
-  font-family: monospace;
-  font-weight:1000;
-  border-radius: 5px;
-  outline: none;
-  border: none;
-  cursor: pointer;
-  width:calc(70% - 20px);
-  height:40px;
-  box-sizing: border-box;
-overflow: hidden;
-    box-shadow:-10px 7px 10px -5px #0055FF20,10px 7px 10px -5px #0055FF20;
-    text-shadow:0 0 10px #FFFFFFA0;
-   
-}
-.liquidButtonShadow {
-  position: absolute;
-  top: 40px;
-  left: 20px;
-  width: calc(70% - 10px);
-  height: 40px;
-	transform: perspective(50px) rotateX(45deg) scale(0.7, 0.3);
-  filter: blur(40px);
-  opacity: 0.7;
-  pointer-events: none;
-  background:#0055FF;
-}
-    .liquidButton > span {
-    	height:35px;
-      position: relative;
-      z-index: 1;
-    }
-.liquidButton > div {
-      position: absolute;
-      top: -100px;
-      left: 0;
-      width: 100%;
-      height: 200px;
-      background: #0055FF;
-      box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
-      transition: 0.5s;
-}
-      .liquidButton > div::before,
-      .liquidButton > div::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 50%;
-        width: 200%;
-        height: 200%;
-        transform: translate(-50%, -75%);
-      }
-      .liquidButton > div::before {
-        border-radius: 45%;
-        background: #0033CCFF;
-        animation: liquidAnimation 10s linear infinite;
-      }
-      .liquidButton > div::after {
-        border-radius: 40%;
-        background: #0033CC77;
-        animation: liquidAnimation 10s linear infinite;
-      }
-      @keyframes liquidAnimation {
-        0% {
-          transform: translate(-50%, -75%) rotate(0deg);
-        }
-        100% {
-          transform: translate(-50%, -75%) rotate(360deg);
-        }
-      }
-
 .BibleContainer{
-	width:90%;height:58px;
+	width:100%;height:58px;
 
-	position:fixed;
-	left:5%;bottom:5px;
+	position:relative;
+	left:0%;bottom:0px;
 
-	margin:40px 0px 0px 0px;padding:5px 0px 0px 0px;
+	margin:0px 0px 20px 0px;padding:5px 0px 0px 0px;
 	box-sizing:border-box;
 
 	background:#000000A0;
@@ -374,26 +80,26 @@ overflow: hidden;
 
 .BibleText span.typed-text{
   font-weight: normal;
-  color: #0055FF;
-  text-shadow:0 0 10px #0055FFA0;
+  color: #FF0035;
+  text-shadow:0 0 10px #FF0035A0;
 }
 .BibleText span.cursor {
   display: inline-block;
-  background-color: #0055FF;
+  background-color: #FF0035;
   margin-left: 0.1rem;
   width: 3px;
   animation: blink 1s infinite;
-  box-shadow:0 0 10px #0055FFA0;
+  box-shadow:0 0 10px #FF0035A0;
 }
 .BibleText span.cursor.typing {
   animation: none;
 }
 @keyframes blink {
-  0%  { background-color: #0055FF;box-shadow:0 0 10px #0055FFA0; }
-  49% { background-color: #0055FF;box-shadow:0 0 10px #0055FFA0; }
+  0%  { background-color: #FF0035;box-shadow:0 0 10px #FF0035A0; }
+  49% { background-color: #FF0035;box-shadow:0 0 10px #FF0035A0; }
   50% { background-color: transparent;box-shadow:none; }
   99% { background-color: transparent;box-shadow:none; }
-  100%  { background-color: #0055FF;box-shadow:0 0 10px #0055FFA0; }
+  100%  { background-color: #FF0035;box-shadow:0 0 10px #FF0035A0; }
 }
 
 .letterTitle{
@@ -407,7 +113,7 @@ overflow: hidden;
 	box-sizing:border-box;
 
 	background:none;
-	color:#0055FF;
+	color:#FF0035;
 
 	font-family:monospace,sans-serif;
    font-weight:1000;
@@ -418,7 +124,7 @@ overflow: hidden;
 
 	border:none;
 	border-radius:0px;
-	text-shadow:0 0 10px #0055FF70;
+	text-shadow:0 0 10px #FF003570;
 }
 
 .letterText{
@@ -446,14 +152,59 @@ overflow: hidden;
 	text-shadow:0 0 10px #FFFFFF40;
 }
 
-.spacer{
-	width:100%;height:100px;
+#musicCanvas{
+	width:100%;height:150px;
 
-	position:relative;
-	left:0px;top:0px;
+	position:fixed;
+	left:0px;top:calc(100% - 150px);
 
 	margin:0px;padding:0px;
 
 	box-sizing:border-box;
 	border:none;
+
+	background:none;
+	pointer-events:none;
+}
+
+#popup{
+	width:100%;height:100%;
+
+	position:fixed;
+	left:0px;bottom:0px;
+
+	margin:0px;padding:0px;
+
+	box-sizing:border-box;
+	border:none;
+
+	background:#000000;
+
+	font-family:monospace;
+	line-height:20px;
+	font-size:20px;
+	font-weight:normal;
+	color:#FFFFFF;
+
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	text-align:center;
+
+	z-index:100;
+	animation:blink infinite 3.5s linear;
+	text-shadow:0px 0px 5px #FFFFFF50;
+}
+
+@keyframes blink{
+	0%{
+		text-shadow:0px 0px 5px #FFFFFF50;
+		color:#FFFFFF;
+	}50%{
+		text-shadow:0px 0px 5px #50505050;
+		color:#505050;
+	}100%{
+		text-shadow:0px 0px 5px #FFFFFF50;
+		color:#FFFFFF;
+	}
 }
