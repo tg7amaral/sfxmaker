@@ -18,6 +18,8 @@ function renderPage(letterIndex){
   switch(letterIndex){
     case 0:{
       document.body.innerHTML += `
+      <audio id="music" src="music.mp3" style="display:none"></audio>
+
       <section id="popup" onclick="this.remove();initMusic()"><br><br><p class="popupText">Clique na tela para abrir o convite...</p><p class="popupFooter">Made with <span class="purpleShadow">&#x1F49C;</span> by Tiago (@xae.cpp)</p></section>
 
       <header>
@@ -352,3 +354,81 @@ function getLetterParam(){
 
 const letter = getLetterParam();
 renderPage(letter);
+
+/// Inicializa o visualizador e a música
+function initMusic() {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const canvas = document.getElementById('confetti');
+    const canvasCtx = canvas.getContext('2d');
+
+    // Configura o canvas
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Obtém o elemento de áudio
+    const audioElement = document.getElementById('music');
+    const track = audioContext.createMediaElementSource(audioElement);
+
+    // Analyser para criar os dados do visualizador
+    const analyser = audioContext.createAnalyser();
+    analyser.fftSize = 256;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    // Conecta o áudio
+    track.connect(analyser);
+    analyser.connect(audioContext.destination);
+
+    // Inicia a música
+    audioElement.play();
+
+    // Desenha o visualizador
+    function draw() {
+        requestAnimationFrame(draw);
+
+        analyser.getByteFrequencyData(dataArray);
+
+        canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Configurações de estilo
+        const waveHeight = canvas.height / 6;
+        const waveWidth = canvas.width;
+        const centerY = canvas.height / 2;
+        const opacity = 0.5;
+        canvasCtx.fillStyle = `rgba(80, 0, 255, ${opacity})`;
+
+        // Inicia as ondas
+        canvasCtx.beginPath();
+        canvasCtx.moveTo(0, centerY);
+
+        for (let i = 0; i < bufferLength; i++) {
+            const value = (dataArray[i] / 255) * waveHeight;
+            const x = (i / bufferLength) * waveWidth;
+            const y = centerY + value * Math.sin(i * 0.2);
+            canvasCtx.lineTo(x, y);
+        }
+
+        canvasCtx.lineTo(canvas.width, canvas.height);
+        canvasCtx.lineTo(0, canvas.height);
+        canvasCtx.closePath();
+        canvasCtx.fill();
+
+        // Espelha a onda para baixo
+        canvasCtx.beginPath();
+        canvasCtx.moveTo(0, centerY);
+
+        for (let i = 0; i < bufferLength; i++) {
+            const value = (dataArray[i] / 255) * waveHeight;
+            const x = (i / bufferLength) * waveWidth;
+            const y = centerY - value * Math.sin(i * 0.2);
+            canvasCtx.lineTo(x, y);
+        }
+
+        canvasCtx.lineTo(canvas.width, 0);
+        canvasCtx.lineTo(0, 0);
+        canvasCtx.closePath();
+        canvasCtx.fill();
+    }
+
+    draw();
+}
