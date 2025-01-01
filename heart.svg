@@ -9,5 +9,5 @@
     z" />
   </g>
  </defs>
-  <use xlink:href="#heart" fill="#FF0035" transform="rotate(225,150,121)" />
+  <use xlink:href="#heart" fill="#5000FF" transform="rotate(225,150,121)" />
 </svg>

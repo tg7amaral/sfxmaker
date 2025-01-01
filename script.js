@@ -12,24 +12,25 @@ const confettiCount = 100
     var canvas,ctx;
     var button;
 
-    let alpha = "0.01";
-    let ticks = 0;
+//&nbsp;
 
 function renderPage(letterIndex){
   switch(letterIndex){
     case 0:{
       document.body.innerHTML += `
-      <section id="popup" onclick="this.remove();initMusic()"><br><br>Clique na tela para abrir o convite...</section>
+      <section id="popup" onclick="this.remove();initMusic()"><br><br><p class="popupText">Clique na tela para abrir o convite...</p><p class="popupFooter">Made with <span class="purpleShadow">&#x1F49C;</span> by Tiago (@xae.cpp)</p></section>
 
       <header>
         <img src="heart.svg" class="heartPulse">
         <img src="heart.svg" class="heart">
         <button>À <span class="titleLabel">Anna Júlia</span></button>
+
+        <audio id="music" src="music.mp3" style="display:none"></audio>
       </header>
 
       <canvas id="waterCanvas"></canvas>
-      <h1 class="titleCanvas">Você aceita sair comigo?</h1>
-      <p class="textCanvas">Não é possível que você vai deixar tudo acabar aqui...<br><br>"Se, para você um dia é como mil anos,<br>te esperarei mais um dia"</p>
+      <h1 class="titleCanvas">Você finalmente vai aceitar sair comigo?</h1>
+      <p class="textCanvas">"Eu não posso esperar&nbsp;&nbsp;,<br>Linda preciso de te ver"</p>
 
       <canvas id="confetti"></canvas>
 
@@ -51,8 +52,32 @@ function renderPage(letterIndex){
         <h3 class="BibleBook">1 Coríntios 13:7</h3>
       </div>
 
-      <audio id="music" src="music.mp3" style="display:none"></audio>
-      <canvas id="musicCanvas"></canvas>
+      <h2 class="letterTitle">Fevereiro de 2022</h2>
+      <p class="letterText">Meus amigos me convenceram a ficar na sala do oitavo ano. Quando fui descoberto, fui para sua sala, o sétimo 1. Lembro de você, Gabriela e Viviane. Por algum motivo, achei que vocês eram irmãs. Você veio falar algo a respeito da Viviane, mas eu não me lembro bem, é só mais uma memória apagada. Oque sei é que essa foi a primeira vez que nos falamos</p>
+      <p class="letterText">Esse dia foi o maior presente de Deus na minha vida; dinheiro nenhum compraria o prazer que foi te conhecer</p>
+      <p class="letterText">Foi no sétimo ano que eu fiz aquilo... Eu espero que você tenha me perdoado</p>
+      <p class="letterText">E até então, quanto a você, eu era indiferente</p>
+
+      <h2 class="letterTitle">Outubro de 2023</h2>
+      <p class="letterText">Eu estava sentado com o Dentin, o João Pedro, na mesa do professor. Ele me desafiou a fazer uma cantada para você. Nesse momento, eu comecei a te olhar diferente, pois minha memória desse momento é clara como a luz do sol. Eu te chamei e disse: "Você, quando tá de longe, é linda, e quando tá perto parece que tá de longe", acho que você só agradeceu</p>
+      <p class="letterText">Eu gostava muito de você nessa época e me preocupava com coisas que eu não devia me preocupar, e 2023 acabou nesse meio tempo e eu não conseguia parar de torcer pra 2024 chegar logo</p>
+
+      <h2 class="letterTitle">A partir de 2024</h2>
+      <p class="letterText">Acho que, após isso, eu comecei a fazer várias cantadas de forma massante. Só parei quando percebi o quanto eu estava sendo insuportável; aliás, desculpa por isso</p>
+      <p class="letterText">Depois disso, pedi ajuda ao Matheus para ter ideia do que fazer. Ele me deu a ideia de fazer cartas. Acho que nas primeiras eu falava muito do seu sorriso, que de fato acho lindo</p>
+      <p class="letterText">Depois, escrevi uma carta pequena com a frase: "E minha chance? Nada ainda? - Admirador secreto", com um chiclete grudado. Lembro que você falou que achou sem criatividade. E esse convite, você achou criativo?</p>
+      <p class="letterText">Depois, pedi para a Isis entregar uma carta com algo como: "Sei que você já disse várias vezes que não quer me dar uma chance, mas deixa eu te fazer feliz". Tinha um Stikadinho nessa carta, e eu acho que sua reação foi positiva, mas não lembro. A partir daí, comecei a te entregar várias cartas, e nenhuma delas foi sem um chocolate. Para ser sincero, acho que a maioria dessas cartas com chocolate eu entreguei só por entregar, só com o intuito de te deixar feliz</p>
+      <p class="letterText">E agora, 2024... Acabou...</p>
+
+      <h2 class="letterTitle">Finalmente 2025</h2>      
+      <p class="letterText">Agora eu estou te fazendo esse convite para que a gente possa conversar melhor, pelo que sei você joga vôlei na rua, então não deve ser dificil para você, a gente pode marcar para antes do seu treino</p>
+      <p class="letterText">Eu te amo de verdade, então, se você aceitar este convite, ficarei muito feliz, você sabe. Você tem o sorriso mais lindo que já vi em toda minha vida, então, mesmo que você não aceite, desde que isso tire um sorriso seu, eu já estou satisfeito. Eu lembro do oitavo ano de quando você sorriu para mim, aquele sorriso de fechar os olhos, depois desse dia eu percebi que realmente estava apaixonado em você</p>
+      <p class="letterText">Nessa situação imagino que vários caras te acham bonita e vários tem interesse, então, sempre pensei que eu devia tentar me destacar para chamar sua atenção para mim, mas acho que não tem funcionado muito. Mostrei esse convite para várias pessoas, uma garota faltou pular de alegria, mas você, que era o alvo, parecia indiferente quanto a ele</p>
+      <p class="letterText">Por algumas coisas do nosso passado, não irei dizer para não deixar o clima ruím nessa carta, percebi que eu não podia errar com você, pois qualquer erro se tornaria grave, erro que se fosse feito por outras pessoas seria considerado como mera brincadeira. Também percebi que eu tinha que ser duas vezes melhor já que você parecia não ligar muito para o meu esforço. Acho que aquilo que aconteceu no sétimo ainda te traz lembranças, o meu passado me condena, então como vou ser duas vezes melhor se estou pelo menos cem vezes atrasado?</p>
+      <p class="letterText">Você conhece alguém que faria algo assim por você? Se sim, por que não fez? Por favor, dê valor às minhas palavras. Tudo o que fiz para você tem valido a pena, porque foi para você. Então, por favor, pense em aceitar para que possamos começar 2025 com o pé direito</p>
+      <p class="letterText">Te conhecer foi um presente de Deus. Desejo de coração que Deus te ilumine no querer e no realizar, para que todos os seus sonhos se realizem. Deus abençoe você e sua família</p>
+      <div class="spacer"></div>
+      <p class="popupFooter" style="position:relative">Made with <span class="purpleShadow">&#x1F49C;</span> by Tiago (@xae.cpp)</p>
     `;
 
     const canvas1 = document.getElementById('waterCanvas');
@@ -77,11 +102,19 @@ function renderPage(letterIndex){
         });
       }
 
+    let alpha = "0.05";
+    let ticks = 0;
+
     function animate() {
         requestAnimationFrame(animate);
 
-        if(ticks >= 10){
-          alpha = alpha === "0.01" ? "0.05" : "0.01";
+        ticks++;
+
+        if(alpha === "0.01" && ticks >= 200){
+          alpha = "0.05";
+          ticks = 0;
+        }else if(alpha === "0.05" && ticks >= 1000){
+          alpha = "0.01";
           ticks = 0;
         }
 
@@ -96,7 +129,7 @@ function renderPage(letterIndex){
               const yOffset = Math.sin(i * wave.length + wave.phase) * wave.amplitude * Math.sin(wave.phase);
               ctx1.lineTo(i, wave.y + yOffset);
           }
-          ctx1.strokeStyle = `hsl(${index / 2 + 340}, 100%, 50%)`;
+          ctx1.strokeStyle = `hsl(${index / 2 + 250}, 100%, 50%)`;
           ctx1.stroke();
 
           wave.phase += wave.frequency;
@@ -172,10 +205,10 @@ let confetti = [];
 let sequins = [];
 
 const colors = [
-  { front: '#FF0035', back: '#FF0035' },
-  { front: '#FF0035', back: '#FF0035' },
-  { front: '#111111', back: '#222222' },
-  { front: '#FFFFFF', back: '#AAAAAA' }
+  { front: '#5000FF', back: '#4000FF' },
+  { front: '#5000FF', back: '#4000EE' },
+  { front: '#5000FF', back: '#4000DD' },
+  { front: '#2200CC', back: '#1100BB' }
 ];
 
 randomRange = (min, max) => Math.random() * (max - min) + min;
@@ -287,17 +320,24 @@ render = () => {
 function yes(){
   if (!disabled) {
   disabled = true
+
   // Loading stage
     setTimeout(() => {
-      window.initBurst()
-      render()
+      window.initBurst();
+      const container = document.querySelector('#confetti')
+      render();
+      const fireworks = new Fireworks.default(container,{particles: 30,hue: {
+        min: 250,
+        max: 270
+      }})
+      fireworks.start();
       navigator.vibrate([100,50,100,200,1000]);
       setTimeout(() => {
         // Reset button so user can select it again
         disabled = false;
 
-        window.location.href = `instagram://user?username=${encodeURIComponent("tiago.xeke")}`;
-      }, 3000)
+        window.location.href = `instagram://user?username=${encodeURIComponent("xae.cpp")}`;
+      }, 3500)
     }, 300)
 }
 }

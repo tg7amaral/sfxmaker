@@ -14,11 +14,311 @@ body{
 	font-size:0px;
 }
 
+header{
+	width:100%;height:60px;
+
+	position:relative;
+	left:0px;top:0px;
+
+	margin:0px 0px 0px 0px;padding:15px;
+
+	box-sizing:border-box;
+
+	background:none;
+
+	border:none;
+	border-radius:0px;
+
+	z-index:101;
+}
+
+.heartPulse{
+	width:auto;height:30px;
+
+	position:absolute;
+	left:15px;top:15px;
+	margin:0px;padding:3px;
+
+	box-sizing:border-box;
+	vertical-align:middle;
+	border-radius:0px;
+
+	animation:pulse 1.5s ease infinite;
+
+	image-rendering:pixelated;
+
+	z-index:1;
+}
+.heart{
+	width:auto;height:30px;
+
+	position:absolute;
+	left:15px;top:15px;
+	margin:0px;padding:3px;
+
+	box-sizing:border-box;
+	vertical-align:middle;
+	border-radius:0px;
+
+	filter:drop-shadow(0px 0px 5px #5000FF70);
+
+	image-rendering:pixelated;
+
+	z-index:2;
+}
+@keyframes pulse {
+  0%{
+    transform:scale(1);
+    opacity:1.0;
+  }
+  100%{
+  	transform:scale(1.75);
+  	opacity:0.0;
+  }
+}
+
+#confetti {
+  height: 100vh;
+  pointer-events: none;
+  position: fixed;
+  width: 100%;
+  z-index: 2;
+}
+
+header > button{
+	width:calc(100% - 60px);height:30px;
+
+	position:relative;
+	left:30px;top:0px;
+
+	margin:0px;padding:0px;
+
+	box-sizing:border-box;
+	vertical-align:middle;
+
+	background:none;
+	color:#FFFFFF;
+	font-family:Arial;
+	font-weight:normal;
+	font-size:14px;
+	line-height:30px;
+
+	border:none;
+	border-radius:0px;
+
+	text-shadow:0 0 10px #FFFFFF70;
+}
+
+.titleLabel{
+	background:#5000FF;
+	text-shadow:0px 0px 10px #FFFFFF;
+	box-shadow:0px 0px 10px #5000FF60;
+	padding:3px 6px;
+	border-radius:4px;
+	margin:0px 0px 0px 5px;
+}
+
+canvas{
+	width:100%;height:200px;
+
+	position:relative;
+	left:0px;top:0px;
+
+	margin:0px;padding:0px;
+
+	box-sizing:border-box;
+
+	background:none;
+
+	border:none;
+	border-radius:0px;
+}
+
+.titleCanvas::selection{
+	background:#5000FF;
+}
+
+.titleCanvas{
+	width:100%;height:200px;
+
+	position:absolute;
+	left:0px;top:60px;
+
+	margin:0px;padding:55px 20px 55px 20px;
+
+	box-sizing:border-box;
+
+	background:none;
+	color:#FFFFFF;
+
+	font-family: monospace, sans-serif;
+  font-weight: bold;
+  font-style: normal;
+	font-size:28px;
+	line-height:30px;
+	text-align:center;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	flex-wrap:wrap;
+
+	border:none;
+	border-radius:0px;
+	text-shadow:0 0 10px #FFFFFF40;
+}
+.textCanvas{
+	width:100%;height:32px;
+
+	position:relative;
+	left:0px;top:0px;
+
+	margin:0px;padding:0px;
+
+	box-sizing:border-box;
+
+	background:none;
+	color:#FFFFFF;
+
+	font-family:monospace,sans-serif;
+   font-weight:normal;
+   font-style:normal;
+	font-size:14px;
+	line-height:16px;
+	text-align:center;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	flex-wrap:wrap;
+
+	border:none;
+	border-radius:0px;
+	text-shadow:0 0 10px #FFFFFF40;
+}
+.mainButtonsContainer{
+	width:100%;height:80px;
+
+	position:relative;
+
+	left:0px;top:0px;
+	margin:40px 0px 20px 0px;padding:0px;
+
+	display:inline-flex;
+	justify-content:center;
+	align-items:center;
+}
+
+.buttonsContainer{
+	width:100%;height:80px;
+	max-width:350px;
+
+	position:relative;
+
+	left:0px;top:0px;
+	margin:0px;padding:0px;
+}
+.negativeButton{
+   position: relative;
+  display: inline-block;
+  padding: 0px;
+  margin: 0px 0px 0px 10px;
+  color: #202020;
+  font-size: 25px;
+  line-height:35px;
+  font-family: monospace;
+  border-radius: 5px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  width:calc(30% - 30px);
+  height:40px;
+  box-sizing: border-box;
+overflow: hidden;
+background:#101010;
+   
+}
+.liquidButton{
+   position: relative;
+  display: inline-block;
+  padding: 0px;
+  margin: 0px 0px 0px 20px;
+  color: #fff;
+  font-size: 25px;
+  line-height:35px;
+  font-family: monospace;
+  font-weight:1000;
+  border-radius: 5px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  width:calc(70% - 20px);
+  height:40px;
+  box-sizing: border-box;
+overflow: hidden;
+    box-shadow:-10px 7px 10px -5px #5000FF20,10px 7px 10px -5px #5000FF20;
+    text-shadow:0 0 10px #FFFFFFA0;
+   
+}
+.liquidButtonShadow {
+  position: absolute;
+  top: 40px;
+  left: 20px;
+  width: calc(70% - 10px);
+  height: 40px;
+	transform: perspective(50px) rotateX(45deg) scale(0.7, 0.3);
+  filter: blur(40px);
+  opacity: 0.7;
+  pointer-events: none;
+  background:#5000FF;
+}
+    .liquidButton > span {
+    	height:35px;
+      position: relative;
+      z-index: 1;
+    }
+.liquidButton > div {
+      position: absolute;
+      top: -100px;
+      left: 0;
+      width: 100%;
+      height: 200px;
+      background: #5000FF;
+      box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+      transition: 0.5s;
+}
+      .liquidButton > div::before,
+      .liquidButton > div::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 200%;
+        height: 200%;
+        transform: translate(-50%, -75%);
+      }
+      .liquidButton > div::before {
+        border-radius: 45%;
+        background: #3000DDFF;
+        animation: liquidAnimation 10s linear infinite;
+      }
+      .liquidButton > div::after {
+        border-radius: 40%;
+        background: #3000DD77;
+        animation: liquidAnimation 10s linear infinite;
+      }
+      @keyframes liquidAnimation {
+        0% {
+          transform: translate(-50%, -75%) rotate(0deg);
+        }
+        100% {
+          transform: translate(-50%, -75%) rotate(360deg);
+        }
+      }
+
 .BibleContainer{
 	width:100%;height:58px;
 
 	position:relative;
-	left:0%;bottom:0px;
+	left:0%;top:0px;
 
 	margin:0px 0px 20px 0px;padding:5px 0px 0px 0px;
 	box-sizing:border-box;
@@ -80,26 +380,26 @@ body{
 
 .BibleText span.typed-text{
   font-weight: normal;
-  color: #FF0035;
-  text-shadow:0 0 10px #FF0035A0;
+  color: #5000FF;
+  text-shadow:0 0 10px #5000FFA0;
 }
 .BibleText span.cursor {
   display: inline-block;
-  background-color: #FF0035;
+  background-color: #5000FF;
   margin-left: 0.1rem;
   width: 3px;
   animation: blink 1s infinite;
-  box-shadow:0 0 10px #FF0035A0;
+  box-shadow:0 0 10px #5000FFA0;
 }
 .BibleText span.cursor.typing {
   animation: none;
 }
 @keyframes blink {
-  0%  { background-color: #FF0035;box-shadow:0 0 10px #FF0035A0; }
-  49% { background-color: #FF0035;box-shadow:0 0 10px #FF0035A0; }
+  0%  { background-color: #5000FF;box-shadow:0 0 10px #5000FFA0; }
+  49% { background-color: #5000FF;box-shadow:0 0 10px #5000FFA0; }
   50% { background-color: transparent;box-shadow:none; }
   99% { background-color: transparent;box-shadow:none; }
-  100%  { background-color: #FF0035;box-shadow:0 0 10px #FF0035A0; }
+  100%  { background-color: #5000FF;box-shadow:0 0 10px #5000FFA0; }
 }
 
 .letterTitle{
@@ -113,7 +413,7 @@ body{
 	box-sizing:border-box;
 
 	background:none;
-	color:#FF0035;
+	color:#5000FF;
 
 	font-family:monospace,sans-serif;
    font-weight:1000;
@@ -124,7 +424,7 @@ body{
 
 	border:none;
 	border-radius:0px;
-	text-shadow:0 0 10px #FF003570;
+	text-shadow:0 0 10px #5000FF70;
 }
 
 .letterText{
@@ -152,19 +452,16 @@ body{
 	text-shadow:0 0 10px #FFFFFF40;
 }
 
-#musicCanvas{
-	width:100%;height:150px;
+.spacer{
+	width:100%;height:100px;
 
-	position:fixed;
-	left:0px;top:calc(100% - 150px);
+	position:relative;
+	left:0px;top:0px;
 
 	margin:0px;padding:0px;
 
 	box-sizing:border-box;
 	border:none;
-
-	background:none;
-	pointer-events:none;
 }
 
 #popup{
@@ -173,18 +470,12 @@ body{
 	position:fixed;
 	left:0px;bottom:0px;
 
-	margin:0px;padding:0px;
+	margin:0px;padding:20px;
 
 	box-sizing:border-box;
 	border:none;
 
 	background:#000000;
-
-	font-family:monospace;
-	line-height:20px;
-	font-size:20px;
-	font-weight:normal;
-	color:#FFFFFF;
 
 	display:flex;
 	align-items:center;
@@ -192,11 +483,55 @@ body{
 	text-align:center;
 
 	z-index:100;
-	animation:blink infinite 3.5s linear;
+	animation:blinkp infinite 2s linear;
 	text-shadow:0px 0px 5px #FFFFFF50;
 }
 
-@keyframes blink{
+.popupText{
+	width:100%;height:auto;
+
+	position:relative;
+	left:0px;bottom:0px;
+
+	margin:0px;padding:0px;
+
+	box-sizing:border-box;
+	border:none;
+
+	background:none;
+
+	font-family:monospace;
+	line-height:20px;
+	font-size:16px;
+	font-weight:normal;
+	color:#FFFFFF;
+
+	animation:blinkp infinite 2s linear;
+}
+
+.popupFooter{
+	width:100%;height:30px;
+
+	position:absolute;
+	left:0px;bottom:0px;
+
+	margin:0px;padding:0px;
+
+	box-sizing:border-box;
+	border:none;
+
+	background:none;
+
+	font-family:monospace;
+	line-height:30px;
+	font-size:12px;
+	font-weight:normal;
+	color:#FFFFFF;
+
+	text-align:center;
+}
+
+@keyframes blinkp{
 	0%{
 		text-shadow:0px 0px 5px #FFFFFF50;
 		color:#FFFFFF;
@@ -207,4 +542,8 @@ body{
 		text-shadow:0px 0px 5px #FFFFFF50;
 		color:#FFFFFF;
 	}
+}
+
+.purpleShadow{
+	text-shadow:0px 0px 5px #5000FF70;
 }
