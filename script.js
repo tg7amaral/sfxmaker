@@ -18,16 +18,12 @@ function renderPage(letterIndex){
   switch(letterIndex){
     case 0:{
       document.body.innerHTML += `
-      <audio id="music" src="music.mp3" style="display:none"></audio>
-
-      <section id="popup" onclick="this.remove();initMusic()"><br><br><p class="popupText">Clique na tela para abrir o convite...</p><p class="popupFooter">Made with <span class="purpleShadow">&#x1F49C;</span> by Tiago (@xae.cpp)</p></section>
+      <section id="popup" onclick="this.remove();initMusic()"><br><br><p class="popupText">Clique na tela para abrir o convite...</p><p class="popupFooter">Feito com <span class="purpleShadow">&#x1F49C;</span> (@xae.cpp)</p></section>
 
       <header>
         <img src="heart.svg" class="heartPulse">
         <img src="heart.svg" class="heart">
         <button>À <span class="titleLabel">Anna Júlia</span></button>
-
-        <audio id="music" src="music.mp3" style="display:none"></audio>
       </header>
 
       <canvas id="waterCanvas"></canvas>
@@ -79,7 +75,9 @@ function renderPage(letterIndex){
       <p class="letterText">Você conhece alguém que faria algo assim por você? Se sim, por que não fez? Por favor, dê valor às minhas palavras. Tudo o que fiz para você tem valido a pena, porque foi para você. Então, por favor, pense em aceitar para que possamos começar 2025 com o pé direito</p>
       <p class="letterText">Te conhecer foi um presente de Deus. Desejo de coração que Deus te ilumine no querer e no realizar, para que todos os seus sonhos se realizem. Deus abençoe você e sua família</p>
       <div class="spacer"></div>
-      <p class="popupFooter" style="position:relative">Made with <span class="purpleShadow">&#x1F49C;</span> by Tiago (@xae.cpp)</p>
+      <p class="popupFooter" style="position:relative">Feito com <span class="purpleShadow">&#x1F49C;</span> (@xae.cpp)</p>
+
+      <audio id="music" src="music.mp3"></audio>
     `;
 
     const canvas1 = document.getElementById('waterCanvas');
@@ -329,8 +327,8 @@ function yes(){
       const container = document.querySelector('#confetti')
       render();
       const fireworks = new Fireworks.default(container,{particles: 30,hue: {
-        min: 250,
-        max: 270
+        min: 245,
+        max: 255
       }})
       fireworks.start();
       navigator.vibrate([100,50,100,200,1000]);
@@ -355,7 +353,6 @@ function getLetterParam(){
 const letter = getLetterParam();
 renderPage(letter);
 
-/// Inicializa o visualizador e a música
 function initMusic() {
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const canvas = document.getElementById('confetti');
@@ -382,6 +379,20 @@ function initMusic() {
     // Inicia a música
     audioElement.play();
 
+    // Função para desenhar um pulso de batida de coração na vertical
+    function drawPulse(y, amplitude, height, isLeft) {
+        const centerX = isLeft ? 0 : canvas.width;
+        const direction = isLeft ? 1 : -1;
+
+        canvasCtx.beginPath();
+        canvasCtx.moveTo(centerX, y);
+        canvasCtx.lineTo(centerX + direction * amplitude, y + height / 4);
+        canvasCtx.lineTo(centerX, y + height / 2);
+        canvasCtx.lineTo(centerX + direction * (amplitude / 2), y + (3 * height) / 4);
+        canvasCtx.lineTo(centerX, y + height);
+        canvasCtx.stroke();
+    }
+
     // Desenha o visualizador
     function draw() {
         requestAnimationFrame(draw);
@@ -391,43 +402,21 @@ function initMusic() {
         canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
         // Configurações de estilo
-        const waveHeight = canvas.height / 6;
-        const waveWidth = canvas.width;
-        const centerY = canvas.height / 2;
-        const opacity = 0.5;
-        canvasCtx.fillStyle = `rgba(80, 0, 255, ${opacity})`;
+        const strokeColor = "rgba(80, 0, 255, 0.3)";
+        const maxAmplitude = 20; // Amplitude máxima das ondas
+        const pulseHeight = 300; // Altura de cada pulso
 
-        // Inicia as ondas
-        canvasCtx.beginPath();
-        canvasCtx.moveTo(0, centerY);
+        canvasCtx.strokeStyle = strokeColor;
+        canvasCtx.lineWidth = 2;
 
+        // Desenha os pulsos ao longo da altura do canvas
+        const step = canvas.height / bufferLength;
         for (let i = 0; i < bufferLength; i++) {
-            const value = (dataArray[i] / 255) * waveHeight;
-            const x = (i / bufferLength) * waveWidth;
-            const y = centerY + value * Math.sin(i * 0.2);
-            canvasCtx.lineTo(x, y);
+            const amplitude = (dataArray[i] / 255) * maxAmplitude;
+            const y = i * step;
+            drawPulse(y, amplitude, pulseHeight, true); // Lado esquerdo
+            drawPulse(y, amplitude, pulseHeight, false); // Lado direito
         }
-
-        canvasCtx.lineTo(canvas.width, canvas.height);
-        canvasCtx.lineTo(0, canvas.height);
-        canvasCtx.closePath();
-        canvasCtx.fill();
-
-        // Espelha a onda para baixo
-        canvasCtx.beginPath();
-        canvasCtx.moveTo(0, centerY);
-
-        for (let i = 0; i < bufferLength; i++) {
-            const value = (dataArray[i] / 255) * waveHeight;
-            const x = (i / bufferLength) * waveWidth;
-            const y = centerY - value * Math.sin(i * 0.2);
-            canvasCtx.lineTo(x, y);
-        }
-
-        canvasCtx.lineTo(canvas.width, 0);
-        canvasCtx.lineTo(0, 0);
-        canvasCtx.closePath();
-        canvasCtx.fill();
     }
 
     draw();
