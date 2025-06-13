@@ -1,17 +1,376 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<meta name="theme-color" content="#DD0035">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de Som Composto Avançado</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #1a1a2e; color: #e0e1dd; padding: 20px; }
+        .tool-container { max-width: 900px; margin: auto; background-color: #162447; padding: 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); }
+        h1 { color: #1f4068; text-align: center; background-color: #e43f5a; padding: 10px; border-radius: 6px; margin-top: 0; }
+        .main-controls { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; }
+        button { flex-grow: 1; padding: 15px; font-size: 16px; font-weight: bold; color: #fff; border: none; border-radius: 6px; cursor: pointer; transition: background-color 0.2s, transform 0.1s; }
+        .play-button { background-color: #4caf50; }
+        .play-button:hover { background-color: #45a049; }
+        .random-button { background-color: #f44336; }
+        .random-button:hover { background-color: #da190b; }
+        button:active { transform: scale(0.98); }
+        .params-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        fieldset { border: 2px solid #1f4068; border-radius: 8px; padding: 15px; margin: 0; position: relative; }
+        legend { font-weight: bold; font-size: 1.1em; color: #e43f5a; padding: 0 10px; }
+        .param-control { margin-bottom: 12px; }
+        .param-control label { display: block; margin-bottom: 5px; font-size: 0.9em; }
+        input[type="range"], select { width: 100%; cursor: pointer; }
+        .param-value { font-family: 'Courier New', Courier, monospace; font-weight: bold; color: #f7b928; margin-left: 10px; }
+        #waveformCanvas { background-color: #0b132b; border: 1px solid #3a506b; border-radius: 4px; cursor: crosshair; width: 100%; }
+        .clear-button { background-color: #6c757d; margin-top: 10px; width: 100%; padding: 8px; font-size: 14px; }
+        .clear-button:hover { background-color: #5a6268; }
+        #bufferCanvas { background-color: #0b132b; border: 1px solid #3a506b; border-radius: 4px; width: 100%; height: 120px; }
+        
+        /* --- ESTILOS PISTA COMPOSTA --- */
+        .timeline-controls button { padding: 12px; font-size: 15px; margin-bottom: 15px; }
+        #timelineContainer { display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto; padding: 10px; background-color: #0b132b; border-radius: 6px; min-height: 60px; }
+        .timeline-clip { background-color: #1f4068; padding: 12px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; gap: 15px; cursor: grab; }
+        .timeline-clip.dragging { opacity: 0.5; background-color: #2a9d8f; cursor: grabbing; }
+        .clip-info { font-weight: bold; flex-grow: 1; pointer-events: none; }
+        .clip-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+        .clip-controls label { font-size: 0.8em; margin: 0; }
+        .clip-controls .param-value { margin-left: 5px; }
+        .remove-clip-btn { background-color: #e43f5a; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; font-weight: bold; font-size: 16px; cursor: pointer; line-height: 28px; text-align: center; padding: 0; flex-shrink: 0; }
+        .remove-clip-btn:hover { background-color: #c33049; }
+        .speed-slider, .volume-slider { width: 80px; }
+        .drop-indicator { height: 4px; background-color: #f7b928; border-radius: 2px; margin: -2px 0; }
 
-	<meta name="description" content="Frio">
-	<meta name="author" content="Tiago (@xae.cpp)">
-
-	<title>...</title>
+        /* --- ESTILOS BOTÕES DE NOTA --- */
+        #note-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+        #note-buttons button { flex-grow: 1; padding: 8px; font-size: 14px; background-color: #3a506b; min-width: 35px; }
+        #note-buttons button:hover { background-color: #4b6a8a; }
+    </style>
 </head>
 <body>
-	<h2>Satanás vos atemoriza com a pobreza e quer que fazeis obscenidade. E Deus vos promete perdão e favor. Deus tem amplos meios e é Onisciente<br>Alcorão 2:268</h2>
-	<h2>السلام عليكم</h2>
+
+    <div class="tool-container">
+        <h1>Editor de Som Composto Avançado</h1>
+
+        <div class="main-controls">
+            <button class="play-button" onclick="playSound()">Tocar Som Atual & Visualizar</button>
+            <button class="random-button" onclick="randomizeAndPlay()">Gerar Aleatório & Tocar</button>
+        </div>
+        
+        <fieldset style="grid-column: 1 / -1; margin-bottom: 20px;">
+            <legend>Visualizador de Som</legend>
+            <canvas id="bufferCanvas"></canvas>
+        </fieldset>
+        
+        <fieldset style="grid-column: 1 / -1; margin-bottom: 20px;">
+            <legend>Pista Composta (Arraste para Reordenar)</legend>
+            <div class="timeline-controls">
+                <button onclick="addCurrentSoundToTimeline()" style="background-color: #007bff;">Adicionar Som Atual à Pista</button>
+                <button onclick="playCompositeAudio()" class="play-button" style="width: 100%;">Tocar Pista Composta Final</button>
+            </div>
+            <div id="timelineContainer"></div>
+        </fieldset>
+
+        <div class="params-grid">
+            <fieldset>
+                <legend>Editor de Forma de Onda</legend>
+                <div class="param-control">
+                    <label for="wave_type_input">Tipo de Onda</label>
+                    <select id="wave_type_input">
+                        <option value="0">Quadrada</option>
+                        <option value="1">Dente de Serra</option>
+                        <option value="2">Senoidal</option>
+                        <option value="4">Desenhada</option>
+                        <option value="3">Ruído</option>
+                    </select>
+                </div>
+                <canvas id="waveformCanvas" width="256" height="100"></canvas>
+                <button class="clear-button" onclick="clearCanvas()">Limpar Desenho</button>
+            </fieldset>
+
+            <fieldset>
+                <legend>Tom (Frequência)</legend>
+                <div class="param-control"><label>Frequência Base: <span id="p_base_freq_value" class="param-value"></span></label><input type="range" id="p_base_freq_input" min="0" max="1" step="0.01"></div>
+                <div class="param-control"><label>Slide: <span id="p_freq_ramp_value" class="param-value"></span></label><input type="range" id="p_freq_ramp_input" min="-1" max="1" step="0.01"></div>
+                <div class="param-control"><label>Delta Slide: <span id="p_freq_dramp_value" class="param-value"></span></label><input type="range" id="p_freq_dramp_input" min="-1" max="1" step="0.01"></div>
+                <!-- NOVOS BOTÕES DE NOTA -->
+                <div id="note-buttons">
+                    <button data-freq="0.32">C</button>
+                    <button data-freq="0.36">D</button>
+                    <button data-freq="0.40">E</button>
+                    <button data-freq="0.42">F</button>
+                    <button data-freq="0.48">G</button>
+                    <button data-freq="0.54">A</button>
+                    <button data-freq="0.60">B</button>
+                    <button data-freq="0.64">C+</button>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Geral</legend>
+                <div class="param-control"><label>Volume: <span id="sound_vol_value" class="param-value"></span></label><input type="range" id="sound_vol_input" min="0" max="1" step="0.01"></div>
+                <div class="param-control"><label>Duty Cycle: <span id="p_duty_value" class="param-value"></span></label><input type="range" id="p_duty_input" min="0" max="1" step="0.01"></div>
+                <div class="param-control"><label>Duty Sweep: <span id="p_duty_ramp_value" class="param-value"></span></label><input type="range" id="p_duty_ramp_input" min="-1" max="1" step="0.01"></div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Envelope</legend>
+                <div class="param-control"><label>Ataque: <span id="p_env_attack_value" class="param-value"></span></label><input type="range" id="p_env_attack_input" min="0" max="1" step="0.01"></div>
+                <div class="param-control"><label>Sustentação: <span id="p_env_sustain_value" class="param-value"></span></label><input type="range" id="p_env_sustain_input" min="0" max="1" step="0.01"></div>
+                <div class="param-control"><label>Punch: <span id="p_env_punch_value" class="param-value"></span></label><input type="range" id="p_env_punch_input" min="0" max="1" step="0.01"></div>
+                <div class="param-control"><label>Decaimento: <span id="p_env_decay_value" class="param-value"></span></label><input type="range" id="p_env_decay_input" min="0" max="1" step="0.01"></div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Vibrato</legend>
+                <div class="param-control"><label>Força: <span id="p_vib_strength_value" class="param-value"></span></label><input type="range" id="p_vib_strength_input" min="0" max="1" step="0.01"></div>
+                <div class="param-control"><label>Velocidade: <span id="p_vib_speed_value" class="param-value"></span></label><input type="range" id="p_vib_speed_input" min="0" max="1" step="0.01"></div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Filtros</legend>
+                <div class="param-control"><label>LPF: <span id="p_lpf_freq_value" class="param-value"></span></label><input type="range" id="p_lpf_freq_input" min="0" max="1" step="0.01"></div>
+                <div class="param-control"><label>Ressonância LPF: <span id="p_lpf_resonance_value" class="param-value"></span></label><input type="range" id="p_lpf_resonance_input" min="0" max="1" step="0.01"></div>
+                <div class="param-control"><label>HPF: <span id="p_hpf_freq_value" class="param-value"></span></label><input type="range" id="p_hpf_freq_input" min="0" max="1" step="0.01"></div>
+            </fieldset>
+        </div>
+    </div>
+
+    <script>
+    // --- CÓDIGO JSFXR (CORRIGIDO - com formatação original) ---
+    var SQUARE = 0, SAWTOOTH = 1, SINE = 2, NOISE = 3, CUSTOM = 4;
+    var masterVolume = 1, OVERSAMPLING = 8;
+    function Params() { this.wave_type = SQUARE; this.p_env_attack = 0; this.p_env_sustain = 0.3; this.p_env_punch = 0; this.p_env_decay = 0.4; this.p_base_freq = 0.3; this.p_freq_limit = 0; this.p_freq_ramp = 0; this.p_freq_dramp = 0; this.p_vib_strength = 0; this.p_vib_speed = 0; this.p_arp_mod = 0; this.p_arp_speed = 0; this.p_duty = 0; this.p_duty_ramp = 0; this.p_repeat_speed = 0; this.p_pha_offset = 0; this.p_pha_ramp = 0; this.p_lpf_freq = 1; this.p_lpf_ramp = 0; this.p_lpf_resonance = 0; this.p_hpf_freq = 0; this.p_hpf_ramp = 0; this.sound_vol = 0.5; this.sample_rate = 44100; this.sample_size = 8; }
+    function frnd(range) { return Math.random() * range; }
+    function rnd(max) { return Math.floor(Math.random() * (max + 1)); }
+    function sqr(x) { return x * x; }
+    Params.prototype.pickupCoin = function () { this.wave_type = SAWTOOTH; this.p_base_freq = 0.4 + frnd(0.5); this.p_env_attack = 0; this.p_env_sustain = frnd(0.1); this.p_env_decay = 0.1 + frnd(0.4); this.p_env_punch = 0.3 + frnd(0.3); if (rnd(1)) { this.p_arp_speed = 0.5 + frnd(0.2); this.p_arp_mod = 0.2 + frnd(0.4); } return this; };
+    Params.prototype.laserShoot = function () { this.wave_type = rnd(2); if (this.wave_type === SINE && rnd(1)) this.wave_type = rnd(1); this.p_base_freq = 0.5 + frnd(0.5); this.p_freq_limit = this.p_base_freq - 0.2 - frnd(0.6); if (this.p_freq_limit < 0.2) this.p_freq_limit = 0.2; this.p_freq_ramp = -0.15 - frnd(0.2); this.p_env_attack = 0; this.p_env_sustain = 0.1 + frnd(0.2); this.p_env_decay = frnd(0.4); return this; };
+    Params.prototype.explosion = function () { this.wave_type = NOISE; this.p_base_freq = sqr(0.1 + frnd(0.4)); this.p_freq_ramp = -0.1 + frnd(0.4); this.p_env_attack = 0; this.p_env_sustain = 0.1 + frnd(0.3); this.p_env_decay = frnd(0.5); this.p_env_punch = 0.2 + frnd(0.6); return this; };
+    Params.prototype.powerUp = function () { this.wave_type = SAWTOOTH; this.p_base_freq = 0.2 + frnd(0.3); this.p_freq_ramp = 0.1 + frnd(0.4); this.p_env_attack = 0; this.p_env_sustain = frnd(0.4); this.p_env_decay = 0.1 + frnd(0.4); return this; };
+    Params.prototype.hitHurt = function () { this.wave_type = rnd(2); if (this.wave_type === SINE) this.wave_type = NOISE; this.p_base_freq = 0.2 + frnd(0.6); this.p_freq_ramp = -0.3 - frnd(0.4); this.p_env_attack = 0; this.p_env_sustain = frnd(0.1); this.p_env_decay = 0.1 + frnd(0.2); return this; };
+    Params.prototype.jump = function () { this.wave_type = SQUARE; this.p_duty = frnd(0.6); this.p_base_freq = 0.3 + frnd(0.3); this.p_freq_ramp = 0.1 + frnd(0.2); this.p_env_attack = 0; this.p_env_sustain = 0.1 + frnd(0.3); this.p_env_decay = 0.1 + frnd(0.2); return this; };
+    function SoundEffect(ps) { this.parameters = ps; this.initForRepeat(); this.waveShape = parseInt(ps.wave_type); this.fltw = Math.pow(ps.p_lpf_freq, 3) * 0.1; this.enableLowPassFilter = (ps.p_lpf_freq != 1); this.fltw_d = 1 + ps.p_lpf_ramp * 0.0001; this.fltdmp = 5 / (1 + Math.pow(ps.p_lpf_resonance, 2) * 20) * (0.01 + this.fltw); if (this.fltdmp > 0.8) this.fltdmp = 0.8; this.flthp = Math.pow(ps.p_hpf_freq, 2) * 0.1; this.flthp_d = 1 + ps.p_hpf_ramp * 0.0003; this.vibratoSpeed = Math.pow(ps.p_vib_speed, 2) * 0.01; this.vibratoAmplitude = ps.p_vib_strength * 0.5; this.envelopeLength = [Math.floor(ps.p_env_attack * ps.p_env_attack * 100000), Math.floor(ps.p_env_sustain * ps.p_env_sustain * 100000), Math.floor(ps.p_env_decay * ps.p_env_decay * 100000)]; this.envelopePunch = ps.p_env_punch; this.flangerOffset = Math.pow(ps.p_pha_offset, 2) * 1020; if (ps.p_pha_offset < 0) this.flangerOffset = -this.flangerOffset; this.flangerOffsetSlide = Math.pow(ps.p_pha_ramp, 2) * 1; if (ps.p_pha_ramp < 0) this.flangerOffsetSlide = -this.flangerOffsetSlide; this.repeatTime = Math.floor(Math.pow(1 - ps.p_repeat_speed, 2) * 20000 + 32); if (ps.p_repeat_speed === 0) this.repeatTime = 0; this.gain = Math.exp(ps.sound_vol) - 1; this.sampleRate = ps.sample_rate; }
+    SoundEffect.prototype.initForRepeat = function() { var ps = this.parameters; this.elapsedSinceRepeat = 0; this.period = 100 / (ps.p_base_freq * ps.p_base_freq + 0.001); this.periodMax = 100 / (ps.p_freq_limit * ps.p_freq_limit + 0.001); this.enableFrequencyCutoff = (ps.p_freq_limit > 0); this.periodMult = 1 - Math.pow(ps.p_freq_ramp, 3) * 0.01; this.periodMultSlide = -Math.pow(ps.p_freq_dramp, 3) * 0.000001; this.dutyCycle = 0.5 - ps.p_duty * 0.5; this.dutyCycleSlide = -ps.p_duty_ramp * 0.00005; if (ps.p_arp_mod >= 0) this.arpeggioMultiplier = 1 - Math.pow(ps.p_arp_mod, 2) * .9; else this.arpeggioMultiplier = 1 + Math.pow(ps.p_arp_mod, 2) * 10; this.arpeggioTime = Math.floor(Math.pow(1 - ps.p_arp_speed, 2) * 20000 + 32); if (ps.p_arp_speed === 1) this.arpeggioTime = 0; };
+    SoundEffect.prototype.getRawBuffer = function () { var fltp = 0, fltdp = 0, fltphp = 0, phase = 0, ipp = 0, envelopeStage = 0, envelopeElapsed = 0, vibratoPhase = 0; var noise_buffer = Array(32); for (var i = 0; i < 32; ++i) noise_buffer[i] = Math.random() * 2 - 1; var flanger_buffer = Array(1024); for (var i = 0; i < 1024; ++i) flanger_buffer[i] = 0; var normalized = [], sample_sum = 0, num_summed = 0, summands = Math.floor(44100 / this.sampleRate); for (var t = 0; ; ++t) { if (this.repeatTime != 0 && ++this.elapsedSinceRepeat >= this.repeatTime) this.initForRepeat(); if (this.arpeggioTime != 0 && t >= this.arpeggioTime) { this.arpeggioTime = 0; this.period *= this.arpeggioMultiplier; } this.periodMult += this.periodMultSlide; this.period *= this.periodMult; if (this.period > this.periodMax) { this.period = this.periodMax; if (this.enableFrequencyCutoff) break; } var rfperiod = this.period; if (this.vibratoAmplitude > 0) { vibratoPhase += this.vibratoSpeed; rfperiod = this.period * (1 + Math.sin(vibratoPhase) * this.vibratoAmplitude); } var iperiod = Math.floor(rfperiod); if (iperiod < OVERSAMPLING) iperiod = OVERSAMPLING; this.dutyCycle += this.dutyCycleSlide; if (this.dutyCycle < 0) this.dutyCycle = 0; if (this.dutyCycle > 0.5) this.dutyCycle = 0.5; if (++envelopeElapsed > this.envelopeLength[envelopeStage]) { envelopeElapsed = 0; if (++envelopeStage > 2) break; } var env_vol, envf = envelopeElapsed / this.envelopeLength[envelopeStage]; if (envelopeStage === 0) { env_vol = envf; } else if (envelopeStage === 1) { env_vol = 1 + (1 - envf) * 2 * this.envelopePunch; } else { env_vol = 1 - envf; } this.flangerOffset += this.flangerOffsetSlide; var iphase = Math.abs(Math.floor(this.flangerOffset)); if (iphase > 1023) iphase = 1023; if (this.flthp_d != 0) { this.flthp *= this.flthp_d; if (this.flthp < 0.00001) this.flthp = 0.00001; if (this.flthp > 0.1) this.flthp = 0.1; } var sample = 0; for (var si = 0; si < OVERSAMPLING; ++si) { var sub_sample = 0; phase++; if (phase >= iperiod) { phase %= iperiod; if (this.waveShape === NOISE) for (var i = 0; i < 32; ++i) noise_buffer[i] = Math.random() * 2 - 1; } var fp = phase / iperiod; if (this.waveShape === SQUARE) { sub_sample = (fp < this.dutyCycle) ? 0.5 : -0.5; } else if (this.waveShape === SAWTOOTH) { sub_sample = (fp < this.dutyCycle) ? -1 + 2 * fp / this.dutyCycle : 1 - 2 * (fp - this.dutyCycle) / (1 - this.dutyCycle); } else if (this.waveShape === SINE) { sub_sample = Math.sin(fp * 2 * Math.PI); } else if (this.waveShape === NOISE) { sub_sample = noise_buffer[Math.floor(phase * 32 / iperiod)]; } else if (this.waveShape === CUSTOM) { const wave_index = Math.floor(fp * (WAVE_RESOLUTION - 1)); sub_sample = customWaveform[wave_index] || 0; } var pp = fltp; this.fltw *= this.fltw_d; if (this.fltw < 0) this.fltw = 0; if (this.fltw > 0.1) this.fltw = 0.1; if (this.enableLowPassFilter) { fltdp += (sub_sample - fltp) * this.fltw; fltdp -= fltdp * this.fltdmp; } else { fltp = sub_sample; fltdp = 0; } fltp += fltdp; fltphp += fltp - pp; fltphp -= fltphp * this.flthp; sub_sample = fltphp; flanger_buffer[ipp & 1023] = sub_sample; sub_sample += flanger_buffer[(ipp - iphase + 1024) & 1023]; ipp = (ipp + 1) & 1023; sample += sub_sample * env_vol; } sample_sum += sample; if (++num_summed >= summands) { num_summed = 0; sample = sample_sum / summands; sample_sum = 0; } else { continue; } sample = sample / OVERSAMPLING * masterVolume * this.gain; normalized.push(sample); } return { "normalized": new Float32Array(normalized) }; };
+
+    // --- LÓGICA DA FERRAMENTA ---
+    let audioCtx, currentParams, timeline = [], clipIdCounter = 0;
+    let waveformCanvas, waveformCtx, customWaveform = [], WAVE_RESOLUTION = 32, isDrawing = false;
+    let bufferCanvas, bufferCtx;
+    const paramIds = ['sound_vol', 'wave_type', 'p_duty', 'p_duty_ramp', 'p_env_attack', 'p_env_sustain', 'p_env_punch', 'p_env_decay', 'p_base_freq', 'p_freq_ramp', 'p_freq_dramp', 'p_vib_strength', 'p_vib_speed', 'p_lpf_freq', 'p_lpf_resonance', 'p_hpf_freq'];
+
+    function initTool() {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        currentParams = new Params();
+        currentParams.pickupCoin();
+        initWaveformEditor();
+        initBufferViewer();
+        paramIds.forEach(id => {
+            const input = document.getElementById(id + '_input');
+            if (input) input.addEventListener('input', () => updateParamsFromUI(id));
+        });
+        document.getElementById('note-buttons').addEventListener('click', handleNoteButtonClick);
+        
+        const timelineContainer = document.getElementById('timelineContainer');
+        timelineContainer.addEventListener('input', handleTimelineInteraction);
+        timelineContainer.addEventListener('click', handleTimelineInteraction);
+        setupDragAndDrop(timelineContainer);
+
+        updateUIFromParams();
+        renderTimeline();
+    }
+
+    function updateParamsFromUI(id) {
+        const input = document.getElementById(id + '_input');
+        const valueDisplay = document.getElementById(id + '_value');
+        const value = (input.type === 'select-one') ? parseInt(input.value) : parseFloat(input.value);
+        currentParams[id] = value;
+        if (valueDisplay) valueDisplay.textContent = value.toFixed(2);
+    }
+    
+    function updateUIFromParams() {
+        paramIds.forEach(id => {
+            const input = document.getElementById(id + '_input');
+            const valueDisplay = document.getElementById(id + '_value');
+            if (input) input.value = currentParams[id];
+            if (valueDisplay) valueDisplay.textContent = parseFloat(currentParams[id]).toFixed(2);
+        });
+    }
+
+    function playSound(bufferData) {
+        let bufferToPlay = bufferData;
+        if (!bufferData) {
+            const sfx = new SoundEffect(currentParams);
+            bufferToPlay = sfx.getRawBuffer().normalized;
+            drawBuffer(bufferToPlay);
+        }
+        if (!bufferToPlay || bufferToPlay.length === 0) return;
+        const audioBuffer = audioCtx.createBuffer(1, bufferToPlay.length, currentParams.sample_rate);
+        audioBuffer.copyToChannel(bufferToPlay, 0);
+        const source = audioCtx.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(audioCtx.destination);
+        source.start(0);
+    }
+    
+    function randomizeAndPlay(){
+        const presets = ['pickupCoin','laserShoot','explosion','powerUp','hitHurt','jump'];
+        const randomPreset = presets[Math.floor(Math.random()*presets.length)];
+        currentParams = new Params();
+        currentParams[randomPreset]();
+        updateUIFromParams();
+        playSound();
+    }
+
+    function handleNoteButtonClick(event) {
+        const freq = event.target.dataset.freq;
+        if (freq) {
+            setFrequency(parseFloat(freq));
+            playSound();
+        }
+    }
+
+    function setFrequency(freqValue) {
+        currentParams.p_base_freq = freqValue;
+        updateUIFromParams();
+    }
+
+    function addCurrentSoundToTimeline() {
+        const sfx = new SoundEffect(currentParams);
+        const rawData = sfx.getRawBuffer();
+        if (rawData.normalized.length === 0) return alert("Não foi possível gerar um som.");
+        
+        timeline.push({
+            id: clipIdCounter++,
+            name: `Som #${clipIdCounter}`,
+            buffer: rawData.normalized,
+            speed: 1.0,
+            volume: 1.0,
+        });
+        renderTimeline();
+    }
+    
+    function renderTimeline() {
+        const container = document.getElementById('timelineContainer');
+        container.innerHTML = '';
+        if (timeline.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: #888;">A pista está vazia.</p>';
+            return;
+        }
+        timeline.forEach(clip => {
+            const duration = (clip.buffer.length / currentParams.sample_rate).toFixed(2);
+            const clipEl = document.createElement('div');
+            clipEl.className = 'timeline-clip';
+            clipEl.draggable = true;
+            clipEl.dataset.id = clip.id;
+            clipEl.innerHTML = `
+                <div class="clip-info">${clip.name} (${duration}s)</div>
+                <div class="clip-controls">
+                    <label>Vol:</label>
+                    <input type="range" class="volume-slider" min="0" max="1.5" step="0.05" value="${clip.volume}" data-id="${clip.id}">
+                    <span class="param-value" id="volume-value-${clip.id}">${clip.volume.toFixed(2)}</span>
+                    <label>Vel:</label>
+                    <input type="range" class="speed-slider" min="0.25" max="4.0" step="0.05" value="${clip.speed}" data-id="${clip.id}">
+                    <span class="param-value" id="speed-value-${clip.id}">${clip.speed.toFixed(2)}x</span>
+                    <button class="remove-clip-btn" data-id="${clip.id}">×</button>
+                </div>`;
+            container.appendChild(clipEl);
+        });
+    }
+
+    function handleTimelineInteraction(event) {
+        const target = event.target;
+        const clipId = parseInt(target.dataset.id);
+        const clip = timeline.find(c => c.id === clipId);
+
+        if (target.classList.contains('remove-clip-btn')) {
+            timeline = timeline.filter(c => c.id !== clipId);
+            renderTimeline();
+        } else if (clip) {
+            if (target.classList.contains('speed-slider')) {
+                clip.speed = parseFloat(target.value);
+                document.getElementById(`speed-value-${clip.id}`).textContent = `${clip.speed.toFixed(2)}x`;
+            } else if (target.classList.contains('volume-slider')) {
+                clip.volume = parseFloat(target.value);
+                document.getElementById(`volume-value-${clip.id}`).textContent = clip.volume.toFixed(2);
+            }
+        }
+    }
+    
+    function setupDragAndDrop(container) {
+        container.addEventListener('dragstart', e => { if (e.target.classList.contains('timeline-clip')) e.target.classList.add('dragging'); });
+        container.addEventListener('dragend', e => { if (e.target.classList.contains('timeline-clip')) e.target.classList.remove('dragging'); });
+        container.addEventListener('dragover', e => {
+            e.preventDefault();
+            const dragging = document.querySelector('.dragging');
+            if (!dragging) return;
+            const afterElement = getDragAfterElement(container, e.clientY);
+            document.querySelector('.drop-indicator')?.remove();
+            const indicator = document.createElement('div');
+            indicator.className = 'drop-indicator';
+            if (afterElement == null) container.appendChild(indicator);
+            else container.insertBefore(indicator, afterElement);
+        });
+        container.addEventListener('dragleave', e => { if (e.target === container) document.querySelector('.drop-indicator')?.remove(); });
+        container.addEventListener('drop', e => {
+            e.preventDefault();
+            document.querySelector('.drop-indicator')?.remove();
+            const dragging = document.querySelector('.dragging');
+            if (!dragging) return;
+            const draggedId = parseInt(dragging.dataset.id);
+            const afterElement = getDragAfterElement(container, e.clientY);
+            const afterId = afterElement ? parseInt(afterElement.dataset.id) : null;
+            const draggedIndex = timeline.findIndex(c => c.id === draggedId);
+            const [draggedItem] = timeline.splice(draggedIndex, 1);
+            if (afterId === null) timeline.push(draggedItem);
+            else { const targetIndex = timeline.findIndex(c => c.id === afterId); timeline.splice(targetIndex, 0, draggedItem); }
+            dragging.classList.remove('dragging');
+            renderTimeline();
+        });
+    }
+
+    function getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('.timeline-clip:not(.dragging)')];
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            if (offset < 0 && offset > closest.offset) return { offset: offset, element: child };
+            else return closest;
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    function playCompositeAudio() {
+        if (timeline.length === 0) return alert("A pista está vazia.");
+        let totalLength = 0;
+        timeline.forEach(clip => { totalLength += Math.floor(clip.buffer.length / clip.speed); });
+        if (totalLength === 0) return;
+        const finalBuffer = new Float32Array(totalLength);
+        let currentPosition = 0;
+        timeline.forEach(clip => {
+            const sourceBuffer = clip.buffer;
+            const newLength = Math.floor(sourceBuffer.length / clip.speed);
+            for (let i = 0; i < newLength; i++) {
+                const virtualIndex = i * clip.speed;
+                const index1 = Math.floor(virtualIndex);
+                const index2 = Math.min(index1 + 1, sourceBuffer.length - 1);
+                const fraction = virtualIndex - index1;
+                const interpolatedSample = sourceBuffer[index1] + (sourceBuffer[index2] - sourceBuffer[index1]) * fraction;
+                finalBuffer[currentPosition + i] = interpolatedSample * clip.volume;
+            }
+            currentPosition += newLength;
+        });
+        let maxAbsValue = 0;
+        for(let i=0; i<finalBuffer.length; i++) if (Math.abs(finalBuffer[i]) > maxAbsValue) maxAbsValue = Math.abs(finalBuffer[i]);
+        if (maxAbsValue > 1.0) for(let i=0; i<finalBuffer.length; i++) finalBuffer[i] /= maxAbsValue;
+        drawBuffer(finalBuffer);
+        playSound(finalBuffer);
+    }
+    
+    function initWaveformEditor(){waveformCanvas=document.getElementById('waveformCanvas');waveformCtx=waveformCanvas.getContext('2d');for(let i=0;i<WAVE_RESOLUTION;i++){customWaveform[i]=Math.sin((i/WAVE_RESOLUTION)*Math.PI*2)}waveformCanvas.addEventListener('mousedown',startDrawing);waveformCanvas.addEventListener('mousemove',drawOnWaveform);waveformCanvas.addEventListener('mouseup',stopDrawing);waveformCanvas.addEventListener('mouseleave',stopDrawing);redrawWaveform()}function startDrawing(e){isDrawing=true;drawOnWaveform(e)}function stopDrawing(){isDrawing=false}function drawOnWaveform(e){if(!isDrawing)return;const r=waveformCanvas.getBoundingClientRect();const x=e.clientX-r.left;const y=e.clientY-r.top;const i=Math.floor((x/waveformCanvas.width)*WAVE_RESOLUTION);const v=-((y-waveformCanvas.height/2)/(waveformCanvas.height/2));if(i>=0&&i<WAVE_RESOLUTION){customWaveform[i]=Math.max(-1,Math.min(1,v))}redrawWaveform()}function redrawWaveform(){waveformCtx.clearRect(0,0,waveformCanvas.width,waveformCanvas.height);waveformCtx.strokeStyle='#4b5d67';waveformCtx.lineWidth=1;waveformCtx.beginPath();waveformCtx.moveTo(0,waveformCanvas.height/2);waveformCtx.lineTo(waveformCanvas.width,waveformCanvas.height/2);waveformCtx.stroke();waveformCtx.strokeStyle='#e43f5a';waveformCtx.lineWidth=2;waveformCtx.beginPath();waveformCtx.moveTo(0,waveformCanvas.height/2-customWaveform[0]*(waveformCanvas.height/2));for(let i=1;i<WAVE_RESOLUTION;i++){const x=(i/(WAVE_RESOLUTION-1))*waveformCanvas.width;const y=waveformCanvas.height/2-customWaveform[i]*(waveformCanvas.height/2);waveformCtx.lineTo(x,y)}waveformCtx.stroke()}function clearCanvas(){customWaveform.fill(0);redrawWaveform()}
+    function initBufferViewer(){bufferCanvas=document.getElementById('bufferCanvas');bufferCanvas.width=bufferCanvas.clientWidth;bufferCanvas.height=bufferCanvas.clientHeight;bufferCtx=bufferCanvas.getContext('2d');clearBufferCanvas()}function clearBufferCanvas(){bufferCtx.fillStyle='#0b132b';bufferCtx.fillRect(0,0,bufferCanvas.width,bufferCanvas.height);bufferCtx.strokeStyle='#4b5d67';bufferCtx.lineWidth=1;bufferCtx.beginPath();bufferCtx.moveTo(0,bufferCanvas.height/2);bufferCtx.lineTo(bufferCanvas.width,bufferCanvas.height/2);bufferCtx.stroke()}function drawBuffer(r){clearBufferCanvas();bufferCtx.strokeStyle='#2a9d8f';bufferCtx.lineWidth=1.5;bufferCtx.beginPath();const t=Math.ceil(r.length/bufferCanvas.width),e=bufferCanvas.height/2;for(let o=0;o<r.length;o+=t){const n=o/r.length*bufferCanvas.width,a=e-r[o]*e;0===o?bufferCtx.moveTo(n,a):bufferCtx.lineTo(n,a)}bufferCtx.stroke()}
+
+    document.addEventListener('DOMContentLoaded', initTool);
+    </script>
 </body>
 </html>
