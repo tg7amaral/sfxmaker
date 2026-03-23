@@ -41,7 +41,7 @@ function renderPage(letterIndex){
             <span>Sim</span>
             <div class="liquid"/></div>
           </button>
-          <button class="negativeButton">
+          <button class="negativeButton" onclick="decline()">
             <span><s>Não</s></span>
           </button>
           <div class="liquidButtonShadow"></div>
@@ -305,10 +305,14 @@ function yes(){
         // Reset button so user can select it again
         disabled = false;
 
-        window.location.href = `instagram://user?username=${encodeURIComponent("tgnael")}`;
+        window.location.href = `instagram://user?username=${encodeURIComponent("tg7amaral")}`;
       }, 3000)
     }, 300)
 }
+}
+
+function decline(){
+      navigator.vibrate([100,100]);
 }
 
 function getLetterParam(){
@@ -399,228 +403,22 @@ function initMusic() {
     const BASS_THRESHOLD = 0.5;  // Somente ativa se o grave for maior que 25% da escala
     const BASS_SENSITIVITY = 5; // Ajusta a curva de resposta
 
-  function drawWaves() {
-      analyser.getByteFrequencyData(dataArray);
-
-      let bassSum = 0;
-      const bassRange = 8; // Considera apenas as primeiras frequências
-      for (let i = 0; i < bassRange; i++) {
-          bassSum += dataArray[i];
-      }
-      let bassIntensity = bassSum / (bassRange * 255); // Normaliza entre 0 e 1
-
-      if (bassIntensity > 0.8) { // Só vibra se o grave for muito forte
-        navigator.vibrate(200);
-      }
-
-      // **Ajuste para enfatizar apenas os graves mais fortes**
-      bassIntensity = Math.pow(bassIntensity, BASS_SENSITIVITY);
-
-      // **Filtro de limiar para evitar ativação em baixos volumes**
-      if (bassIntensity < BASS_THRESHOLD) {
-          bassIntensity = 0; // Bloqueia o efeito se estiver abaixo do limite
-      }
-
-      const bassResponse = bassIntensity * BASS_MULTIPLIER;
-
-      bassPulse = bassPulse * 0.85 + bassResponse * 0.15; // Suavização
-        
-        // Posição Y base das ondas (parte inferior do canvas - altura das ondas)
-        const baseY = coverCanvas.height - WAVE_HEIGHT;
-        
-        // Fator de tempo para animação contínua
-        const time = Date.now() / 1000;
-        
-        // Primeiro, desenhar o glow das ondas
-        cctx.beginPath();
-        cctx.moveTo(0, coverCanvas.height);
-        
-        for (let i = 0; i <= WAVE_SEGMENTS; i++) {
-            const x = i * (coverCanvas.width / WAVE_SEGMENTS);
-            cctx.lineTo(x, wavePoints[i]);
-        }
-        
-        cctx.lineTo(coverCanvas.width, coverCanvas.height);
-        cctx.closePath();
-        
-        // Aplicar blur para o efeito glow
-        cctx.shadowColor = "#0055FF77";
-        cctx.shadowBlur = 5 + bassResponse * 4; // Glow varia sutilmente com os graves
-        cctx.shadowOffsetX = 0;
-        cctx.shadowOffsetY = 0;
-        
-        // Desenhar as ondas
-        cctx.beginPath();
-        
-        // Começa no canto inferior esquerdo
-        cctx.moveTo(0, coverCanvas.height);
-        
-        // Atualizar pontos da onda com suavização para movimento contínuo
-        for (let i = 0; i <= WAVE_SEGMENTS; i++) {
-            // Determinar nova altura baseada na frequência
-            const frequencyBin = Math.floor(i / WAVE_SEGMENTS * 30);
-            const frequencyValue = dataArray[frequencyBin] / 255;
-            
-            // Variação baseada na posição - mais movimento no centro
-            const positionFactor = 1 - Math.abs((i / WAVE_SEGMENTS) - 0.5) * 1.8; // 0.1 nas bordas, 1 no centro
-            
-            // Calcular nova altura da onda
-            // Base de movimento fluido
-            const baseWave = Math.sin(i / 8 + time * WAVE_SPEED) * 0.5 + 
-                           Math.sin(i / 4 - time * WAVE_SPEED * 0.7) * 0.3;
-            
-            // Calcular efeito de picos quando os graves são fortes (mais moderado)
-            const bassPeak = Math.sin(i / 5 + time * (3 + bassPulse)) * bassResponse * 20 * positionFactor;
-            
-            // Altura total da onda - combina movimento padrão com resposta aos graves
-            let targetHeight = baseY + baseWave * 10 + bassPeak;
-            
-            // Adicionar deformação extra baseada diretamente na frequência atual
-            targetHeight += frequencyValue * bassResponse * 12;
-            
-            // Suavizar transição entre frames
-            wavePoints[i] = wavePoints[i] * 0.65 + targetHeight * 0.35;
-            
-            // Desenhar ponto da onda
-            const x = i * (coverCanvas.width / WAVE_SEGMENTS);
-            cctx.lineTo(x, wavePoints[i]);
-        }
-        
-        // Completar o caminho até o canto inferior direito
-        cctx.lineTo(coverCanvas.width, coverCanvas.height);
-        cctx.closePath();
-        
-        // Criar gradiente com variação de transparência
-        const gradient = cctx.createLinearGradient(0, baseY - 15 * bassPulse, 0, coverCanvas.height);
-        
-        // Manter a cor consistente, variando apenas a transparência
-        gradient.addColorStop(0, `rgba(0, 85, 255, 1)`);
-        gradient.addColorStop(1, `rgba(0, 85, 255, 1)`);
-        
-        cctx.fillStyle = gradient;
-        cctx.fill();
-        
-        // Resetar as propriedades de sombra após desenhar as ondas
-        cctx.shadowBlur = 0;
-    }
-
-function drawHugEffect(cctx, canvas) {
-    const w = canvas.width;
-    const h = canvas.height;
-    const diagonal = Math.sqrt(w * w + h * h);
-
-    // Crescimento / retração
-    hugProgress += 25 * hugDirection;
-
-    // Limites
-    if (hugProgress >= diagonal) {
-        hugProgress = diagonal;
-        hugDirection = -1; // começa a "voltar"
-    }
-
-    if (hugProgress <= 0) {
-        hugProgress = 0;
-        hugActive = false; // efeito termina
-        hugDirection = 1;  // prepara próximo abraço
-        return;
-    }
-
-    // Transformação
-    cctx.translate(w / 2, h / 2);
-    cctx.rotate(Math.PI / 4);
-
-    cctx.fillStyle = hugColor;
-
-    // Faixa superior esquerda
-    cctx.fillRect(
-        -diagonal,
-        -diagonal / 2,
-        diagonal * 2,
-        hugProgress
-    );
-
-    // Faixa inferior direita
-    cctx.fillRect(
-        -diagonal,
-        diagonal / 2 - hugProgress,
-        diagonal * 2,
-        hugProgress
-    );
-
-    // Reset da matriz
-    cctx.setTransform(1, 0, 0, 1, 0, 0);
-}
-
     function drawLyrics() {
         cctx.clearRect(0, 0, coverCanvas.width, coverCanvas.height);
-        
-        // Desenhar as ondas primeiro
-        drawWaves();
-
-        if (hugActive) {
-          drawHugEffect(cctx,coverCanvas);
-        }
         
         // Desenhar as letras da música em seguida
         cctx.font = "bold 35px monospace";
 
         let currentTime = audio.currentTime;
 
-        lyrics.forEach((line, index) => {
-            if (currentTime >= line.start && currentTime <= line.end) {
-               if (line.text === "X:HUG" && !hugTriggered.has(index)) {
-            hugTriggered.add(index);
-
-            hugActive = true;
-            hugProgress = 0;
-            hugDirection = 1;
-            hugColor = line.color || "#0055FF";
-
-            return;
-        }
-
-                let totalLetters = line.text.length;
-                let visibleLetters = Math.min(
-                    totalLetters,
-                    Math.floor((currentTime - line.start) * VELOCITY)
-                );
-                revealedLetters[index] = visibleLetters;
-
-                let words = line.text.split(" ");console.log(line.text)
-                let x = (coverCanvas.width/2) - (cctx.measureText(line.text).width/2) + 10;
-                let lettersRendered = 0;
-
-                words.forEach(word => {
-                    let isHighlighted = highlightedWords.includes(word);
-
-                    for (let i = 0; i < word.length; i++) {
-                        if (lettersRendered >= revealedLetters[index]) {
-                            return;
-                        }
-
-                        // Adicionar glow para palavras destacadas em azul
-                        if (isHighlighted) {
-                            cctx.shadowColor = "#0055FF77";
-                            cctx.shadowBlur = 5;
-                            cctx.fillStyle = "#0055FF";
-                        } else {
-                            cctx.shadowBlur = 0;
-                            cctx.fillStyle = "#FFFFFF";
-                        }
+        if(currentTime > 2 && currentTime < 3){
 
                         cctx.textAlign = "center";
                         cctx.textBaseline = "middle"; // opcional, mas ajuda
+                        cctx.fillStyle = "#FFFFFF";
                         
-                        cctx.fillText(word[i], x, line.y);
-                        x += cctx.measureText(word[i]).width;
-                        lettersRendered++;
+                        cctx.fillText("Se não existe",window.innerWidth/2, 95);
                     }
-
-                    x += cctx.measureText(" ").width; // Adiciona espaço entre as palavras
-                });
-            }
-        });
-
         requestAnimationFrame(drawLyrics);
     }
 
