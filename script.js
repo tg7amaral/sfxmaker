@@ -425,7 +425,7 @@ const VIBRATION_DELAY = 120;     // tempo mínimo entre vibrações (ms)
       {text:"quando",end:9.6},
       {text:"eu",end:10},
       {text:"recebi",end:10.4},
-      {text:"seu",end:10.8},
+      {text:"seu",end:10.7},
       {text:"abraço",end:11.2},
       {text:"Foi",end:11.5},
       {text:"um",end:11.7},
@@ -447,25 +447,38 @@ const VIBRATION_DELAY = 120;     // tempo mínimo entre vibrações (ms)
       {text:"lá",end:17.1},
       {text:"no",end:17.3},
       {text:"passado",end:17.7},
-      {text:"fazendo",end:18.1},
-      {text:"minha",end:18.45},
-      {text:"mente",end:18.9},
-      {text:"flutuar",end:19.3},
+      {text:"fazendo",end:18.25},
+      {text:"minha",end:18.6},
+      {text:"mente",end:19},
+      {text:"flutuar",end:20},
+      {text:"Mas",end:20.4},
+      {text:"sei",end:20.8},
+      {text:"lá",end:21.2},
+      {text:"se",end:21.6},
+      {text:"existe",end:22},
+      {text:"vida",end:22.4},
+      {text:"fora",end:22.8},
+      {text:"da",end:23.1},
+      {text:"Terra",end:23.5},
+      {text:"disso",end:23.8},
+      {text:"eu",end:24.2},
+      {text:"não",end:24.6},
+      {text:"sei",end:25.3},
     ];
 
     let index = 0;
 
     let textSize = 0;
 
-    let lastTreble = 0;
+let lastTreble = 0;
 let lastTrebleBeat = 0;
 
 function detectTrebleBeat() {
     analyser.getByteFrequencyData(dataArray);
 
-    // faixa de agudos real (mais ou menos 4kHz pra cima)
-    let start = Math.floor(bufferLength * 0.45);
-    let end = Math.floor(bufferLength * 0.85);
+    // pega agudos reais (não só o final do espectro)
+    let start = Math.floor(bufferLength * 0.30);
+    let end = Math.floor(bufferLength * 0.75);
 
     let sum = 0;
 
@@ -475,24 +488,26 @@ function detectTrebleBeat() {
 
     let treble = sum / (end - start);
 
-    // detecta subida rápida (pico)
-    let diff = treble - lastTreble;
+    // suaviza para evitar ruído
+    let smooth = (treble * 0.6) + (lastTreble * 0.4);
 
-    //console.log("Treble:", treble, "Diff:", diff);
+    // detecta subida rápida
+    let diff = smooth - lastTreble;
 
-    if (diff > 6) {
+    //console.log("Treble:", smooth, "Diff:", diff);
+
+    if (diff > 0.5) {
         let now = Date.now();
 
-        // evita vibrar várias vezes no mesmo pico
-        if (now - lastTrebleBeat > 90) {
-            navigator.vibrate(30);
+        if (now - lastTrebleBeat > 80) {
+            navigator.vibrate(25);
             console.log("AGUDO DETECTADO");
 
             lastTrebleBeat = now;
         }
     }
 
-    lastTreble = treble;
+    lastTreble = smooth;
 }
 
   let hide = false;
