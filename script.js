@@ -1,3 +1,11 @@
+// Exemplo: URL é ?produto=notebook&preco=2500
+const urlParams = new URLSearchParams(window.location.search);
+let girlName = urlParams.get('to');
+if(girlName == null){
+  girlName = "Kaylayne";
+}
+
+
 const confettiCount = 100
     const sequinCount = 20
 
@@ -19,18 +27,18 @@ function renderPage(letterIndex){
       <header>
         <img src="heart.svg" class="heartPulse">
         <img src="heart.svg" class="heart">
-        <button>À <span class="titleLabel">Fulana</span></button>
+        <button>À <span class="titleLabel">${girlName}</span></button>
 
-        <audio id="music" src="music.mp3" style="display:none"></audio>
+        <audio id="music" src="music.wav" style="display:none"></audio>
       </header>
 
       <section id="cover">
         <button class="openInvite">Clique para abrir o convite</button>
-        <button class="author">@tg7amaral</button>
       </section>
+      <button class="author">@tg7amaral</button>
 
       <canvas id="waterCanvas"></canvas>
-      <h1 class="titleCanvas">Você aceita sair comigo?</h1>
+      <h1 class="titleCanvas">${girlName}, aceita sair comigo?</h1>
       <p class="textCanvas">Data:&nbsp;&nbsp;Na que der para você<br>Horário: No que você quiser</p>
 
       <canvas id="confetti"></canvas>
@@ -312,7 +320,7 @@ function yes(){
 }
 
 function decline(){
-      navigator.vibrate([100,100]);
+      navigator.vibrate([100,50,100]);
 }
 
 function getLetterParam(){
@@ -326,12 +334,19 @@ function getLetterParam(){
 const letter = getLetterParam();
 renderPage(letter);
 
-let hugActive = false;
-let hugProgress = 0;
-let hugColor = "#0055FF";
-let hugDirection = 1; // 1 = entrando, -1 = saindo
-let hugTriggered = new Set(); // evita múltiplos disparos
 
+function hideCover(){
+  let opacity = 1;
+      let interval = setInterval(function(){
+        opacity -= 0.2;
+        document.querySelector("#cover").style.opacity = opacity;
+
+        if(opacity <= 0){
+          document.querySelector("#cover").remove();
+          clearInterval(interval);
+        }
+      },100)
+}
 
 function initMusic() {
     const audio = document.querySelector("#music");
@@ -351,7 +366,13 @@ function initMusic() {
     document.querySelector("#cover").appendChild(coverCanvas);
 
     let cctx = coverCanvas.getContext("2d");
+
     cctx.imageSmoothingEnabled = false;
+  cctx.webkitImageSmoothingEnabled = false; // Safari/Chrome antigo
+  cctx.mozImageSmoothingEnabled = false;    // Firefox antigo
+  cctx.msImageSmoothingEnabled = false;     // IE11
+
+  cctx.font = "bold 60px monospace";
 
     const VELOCITY = 15; // Velocidade da animação
     
@@ -365,6 +386,11 @@ function initMusic() {
     // Buffer para análise de frequência
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
+
+    // Controle de vibração por agudos
+let lastVibration = 0;
+const TREBLE_THRESHOLD = 0.1;   // sensibilidade (0.3 = vibra fácil, 0.7 = vibra só em agudos fortes)
+const VIBRATION_DELAY = 120;     // tempo mínimo entre vibrações (ms)
     
     // Inicializa pontos da onda para animação mais suave
     let wavePoints = Array(WAVE_SEGMENTS + 1).fill(0);
@@ -372,54 +398,135 @@ function initMusic() {
     // Histórico de resposta aos graves para efeito pulsante
     let bassPulse = 0;
 
-    // 🔥 Lista de frases com tempos de início (start) e fim (end)
-    let lyrics = [
-        { text: "Se não existe", start: 2, end: 5.8, y: 90 },
-        { text: "vida fora da", start: 2.8, end: 5.8, y: 130 },
-        { text: "terra", start: 3.5, end: 5.8, y: 170 },
-
-        { text: "O universo é", start: 4, end: 5.8, y: 230 },
-        { text: "desperdício de", start: 4.6, end: 5.8, y: 270 },
-        { text: "espaço", start: 5, end: 5.8, y: 310 },
-
-        { text: "Mas as estrelas", start: 6, end: 10, y: 90 },
-        { text: "apareceram na", start: 6.5, end: 10, y: 130 },
-        { text: "minha frente", start: 7, end: 10, y: 170 },
-        { text: "quando eu", start: 7.6, end: 10, y: 210 },
-
-        { text: "Recebi seu", start: 8, end: 10, y: 290 },
-        { text: "Abraço", start: 8.4, end: 10,y: 330 },
-
-        {text:"X:HUG",start:8.5,end:9,color:"#0033DD"},
-        {text:"X:HUG",start:9.5,end:10,color:"#000000"}
-
-    ];
-
-    // 🔵 Palavras que devem ser destacadas em azul
-    const highlightedWords = ["vida","universo","espaço","estrelas","Abraço"];
-
-    let revealedLetters = lyrics.map(() => 0);
-
     const BASS_THRESHOLD = 0.5;  // Somente ativa se o grave for maior que 25% da escala
     const BASS_SENSITIVITY = 5; // Ajusta a curva de resposta
 
+    let lyrics = [{text:"Se",end:2.3},
+      {text:"não",end:2.6},
+      {text:"existe",end:3},
+      {text:"vida",end:3.3},
+      {text:"fora",end:3.5},
+      {text:"da",end:3.8},
+      {text:"Terra",end:4.2},
+      {text:" ",end:4.3},
+      {text:"O",end:4.6},
+      {text:"universo",end:5},
+      {text:"é",end:5.2},
+      {text:"desperdício",end:5.5},
+      {text:"de",end:5.8},
+      {text:"espaço",end:6.3},
+      {text:"Mas",end:6.5},
+      {text:"as",end:6.8},
+      {text:"estrelas",end:7.3},
+      {text:"apareceram",end:8},
+      {text:"na",end:8.3},
+      {text:"minha",end:8.7},
+      {text:"frente",end:9.2},
+      {text:"quando",end:9.6},
+      {text:"eu",end:10},
+      {text:"recebi",end:10.4},
+      {text:"seu",end:10.8},
+      {text:"abraço",end:11.2},
+      {text:"Foi",end:11.5},
+      {text:"um",end:11.7},
+      {text:"tanto",end:12.1},
+      {text:"quanto",end:12.5},
+      {text:"muito",end:12.8},
+      {text:"mágico",end:13.2},
+      {text:"entro",end:13.6},
+      {text:"no",end:13.9},
+      {text:"buraco",end:14.3},
+      {text:"negro",end:14.7},
+      {text:"só",end:15},
+      {text:"para",end:15.3},
+      {text:"voltar",end:15.6},
+      {text:"e",end:15.8},
+      {text:"ver",end:16.1},
+      {text:"seu",end:16.4},
+      {text:"sorriso",end:16.8},
+      {text:"lá",end:17.1},
+      {text:"no",end:17.3},
+      {text:"passado",end:17.7},
+      {text:"fazendo",end:18.1},
+      {text:"minha",end:18.45},
+      {text:"mente",end:18.9},
+      {text:"flutuar",end:19.3},
+    ];
+
+    let index = 0;
+
+    let textSize = 0;
+
+    let lastTreble = 0;
+let lastTrebleBeat = 0;
+
+function detectTrebleBeat() {
+    analyser.getByteFrequencyData(dataArray);
+
+    // faixa de agudos real (mais ou menos 4kHz pra cima)
+    let start = Math.floor(bufferLength * 0.45);
+    let end = Math.floor(bufferLength * 0.85);
+
+    let sum = 0;
+
+    for (let i = start; i < end; i++) {
+        sum += dataArray[i];
+    }
+
+    let treble = sum / (end - start);
+
+    // detecta subida rápida (pico)
+    let diff = treble - lastTreble;
+
+    //console.log("Treble:", treble, "Diff:", diff);
+
+    if (diff > 6) {
+        let now = Date.now();
+
+        // evita vibrar várias vezes no mesmo pico
+        if (now - lastTrebleBeat > 90) {
+            navigator.vibrate(30);
+            console.log("AGUDO DETECTADO");
+
+            lastTrebleBeat = now;
+        }
+    }
+
+    lastTreble = treble;
+}
+
+  let hide = false;
+
     function drawLyrics() {
+      detectTrebleBeat();
+
         cctx.clearRect(0, 0, coverCanvas.width, coverCanvas.height);
         
         // Desenhar as letras da música em seguida
-        cctx.font = "bold 35px monospace";
 
         let currentTime = audio.currentTime;
 
-        if(currentTime > 2 && currentTime < 3){
-
-                        cctx.textAlign = "center";
+        cctx.textAlign = "center";
                         cctx.textBaseline = "middle"; // opcional, mas ajuda
                         cctx.fillStyle = "#FFFFFF";
-                        
-                        cctx.fillText("Se não existe",window.innerWidth/2, 95);
-                    }
+
+      // if(cctx.measureText(lyrics[index].text).width >= window.innerWidth){
+      //   cctx.font = "bold 55px monospace";
+      // }else{
+      //   cctx.font = "bold 80px monospace";
+      // }
+
+        if(currentTime >= 2 && lyrics[index] != undefined){cctx.fillText(lyrics[index].text,window.innerWidth/2, window.innerHeight/2);}
+        if(lyrics[index] != undefined && currentTime >= lyrics[index].end){
+          index++;
+        }
+
+                    if(currentTime >= 57 && !hide){
+                      hide = true
+                      hideCover()
+                    }//}else{
         requestAnimationFrame(drawLyrics);
+                    //}
     }
 
     audio.addEventListener("play", () => {
@@ -431,16 +538,7 @@ function initMusic() {
     audio.play();
 
     audio.addEventListener("ended", () => {
-      let opacity = 1;
-      let interval = setInterval(function(){
-        opacity -= 0.2;
-        document.querySelector("#cover").style.opacity = opacity;
-
-        if(opacity <= 0){
-          document.querySelector("#cover").remove();
-          clearInterval(interval);
-        }
-      },100)
+      //hideCover();
 
       audio.src = "musicVibe.mp3"; // Define o novo áudio
       audio.loop = true; // Faz o segundo tocar em loop
