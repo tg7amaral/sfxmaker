@@ -318,7 +318,7 @@ function yes(){
 }
 
 function decline(){
-      navigator.vibrate([100,50,100]);
+      navigator.vibrate([100,100,100]);
 }
 
 function getLetterParam(){
