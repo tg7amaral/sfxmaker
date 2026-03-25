@@ -1,9 +1,7 @@
 // Exemplo: URL é ?produto=notebook&preco=2500
 const urlParams = new URLSearchParams(window.location.search);
 let girlName = urlParams.get('to');
-if(girlName == null){
-  girlName = "Kaylayne";
-}
+let instagram = urlParams.get('from');
 
 
 const confettiCount = 100
@@ -29,13 +27,13 @@ function renderPage(letterIndex){
         <img src="heart.svg" class="heart">
         <button>À <span class="titleLabel">${girlName}</span></button>
 
-        <audio id="music" src="music.wav" style="display:none"></audio>
+        <audio id="music" src="musicVibe.mp3" style="display:none"></audio>
       </header>
 
       <section id="cover">
         <button class="openInvite">Clique para abrir o convite</button>
       </section>
-      <button class="author">@tg7amaral</button>
+      <button class="author">@${instagram}</button>
 
       <canvas id="waterCanvas"></canvas>
       <h1 class="titleCanvas">${girlName}, aceita sair comigo?</h1>
@@ -313,7 +311,7 @@ function yes(){
         // Reset button so user can select it again
         disabled = false;
 
-        window.location.href = `instagram://user?username=${encodeURIComponent("tg7amaral")}`;
+        window.location.href = `instagram://user?username=${encodeURIComponent(instagram)}`;
       }, 3000)
     }, 300)
 }
@@ -548,7 +546,7 @@ function detectTrebleBeat() {
         if (audioCtx.state === "suspended") {
             audioCtx.resume();
         }
-        drawLyrics();
+        hideCover();
     });
     audio.play();
 
