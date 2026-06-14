@@ -568,179 +568,123 @@ function detectTrebleBeat() {
  * You can change properties under comment "Effect properties"
  */
 
+// Init Context
 let c = document.createElement('canvas').getContext('2d')
 let postctx = document.querySelector("#oceanCanvas").getContext('2d')
 let ocean = c.canvas
 let vertices = []
-let textParticles = []
 
+// Effect Properties
 let vertexCount = 7000
 let vertexSize = 3
 let oceanWidth = 150
 let oceanHeight = -80
-let gridSize = 32
-let waveSize = 32
-let perspective = 100
+let gridSize = 32;
+let waveSize = 32;
+let perspective = 100;
 
+// Common variables
 let depth = (vertexCount / oceanWidth * gridSize)
 let frame = 0
-let { sin, cos, PI } = Math
+let { sin, cos, tan, PI } = Math
 
-// Amostra posições 3D do texto numa fonte real
-function sampleTextParticles(text, fontSize, spacing, worldZ, worldX, worldY) {
-  const tmp = document.createElement('canvas').getContext('2d')
-  tmp.canvas.width = fontSize * text.length * 0.75
-  tmp.canvas.height = fontSize * 1.4
-  tmp.fillStyle = '#0055FF'
-  tmp.font = `bold ${fontSize}px sans-serif`
-  tmp.textBaseline = 'top'
-  tmp.fillText(text, 0, 0)
-
-  const { data, width, height } = tmp.getImageData(0, 0, tmp.canvas.width, tmp.canvas.height)
-  const particles = []
-
-  for (let py = 0; py < height; py += spacing) {
-    for (let px = 0; px < width; px += spacing) {
-      if (data[(py * width + px) * 4 + 3] > 128) {
-        particles.push({
-          // destino: posição final no texto
-          tx: worldX + (px - width / 2) * 1.4,
-          ty: worldY + (py - height / 2) * 1.4,
-          tz: worldZ,
-          // origem: nasce na superfície do oceano, espalhada
-          ox: worldX + (px - width / 2) * 1.4 + (Math.random() - 0.5) * 600,
-          oy: 200,   // fundo do oceano
-          oz: worldZ + Math.random() * 300,
-          phase: Math.random() * PI * 2,
-          delay: Math.random(),  // 0..1, atraso individual
-        })
-      }
-    }
-  }
-  return particles
-}
-
-textParticles = sampleTextParticles(girlName, 90, 3, 160, 90, -60)
-
-// t: 0 = origem (oceano), 1 = destino (texto formado)
-// ciclo: 0..1 forma, pausa, 1..0 dissolve, pausa, repete
-function cycleProgress(frame) {
-  const period = 600   // frames por ciclo completo
-  const f = (frame % period) / period
-  // 0–0.35 → forma (0→1), 0.35–0.65 → pausa formado, 0.65–1 → dissolve (1→0)
-  if (f < 0.35) return f / 0.35
-  if (f < 0.65) return 1
-  return 1 - (f - 0.65) / 0.35
-}
-
-function easeInOut(t) {
-  return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
-}
-
-function project(x, y, z, rad, rad2) {
-  let tx, ty, tz
-
-  tx = x * cos(rad) + z * sin(rad)
-  tz = -x * sin(rad) + z * cos(rad)
-  x = tx; z = tz
-
-  tx = x * cos(rad) - y * sin(rad)
-  ty = x * sin(rad) + y * cos(rad)
-  x = tx; y = ty
-
-  ty = y * cos(rad2) - z * sin(rad2)
-  tz = y * sin(rad2) + z * cos(rad2)
-  y = ty; z = tz
-
-  if (z <= 0) return null
-  return { px: x / (z / perspective), py: y / (z / perspective) }
-}
-
-let oldTimeStamp = performance.now()
+// Render loop
+let oldTimeStamp = performance.now();
 let loop = (timeStamp) => {
-  let rad  = sin(frame / 100) * PI / 20
-  let rad2 = sin(frame / 50)  * PI / 10
-  const dt = (timeStamp - oldTimeStamp) / 1000
-  oldTimeStamp = timeStamp
-  frame += dt * 50
-
-  if (postctx.canvas.width  !== postctx.canvas.offsetWidth ||
-      postctx.canvas.height !== postctx.canvas.offsetHeight) {
-    postctx.canvas.width  = ocean.width  = postctx.canvas.offsetWidth
+	let rad = sin(frame / 100) * PI / 20
+  let rad2 = sin(frame / 50) * PI / 10
+  const dt = (timeStamp - oldTimeStamp) / 1000;
+  oldTimeStamp = timeStamp;
+  
+	frame += dt * 50;
+	if (postctx.canvas.width !== postctx.canvas.offsetWidth || postctx.canvas.height !== postctx.canvas.offsetHeight) { 
+  	postctx.canvas.width = ocean.width = postctx.canvas.offsetWidth
     postctx.canvas.height = ocean.height = postctx.canvas.offsetHeight
   }
 
-  c.fillStyle = 'hsl(200deg,100%,0%)'
+  
+	c.fillStyle = `hsl(200deg, 100%, 0%)`
   c.fillRect(0, 0, ocean.width, ocean.height)
   c.save()
   c.translate(ocean.width / 2, ocean.height / 2)
-
-  // Oceano
+  
+  c.beginPath()
   vertices.forEach((vertex, i) => {
-    let x = vertex[0] - frame % (gridSize * 2)
+  	let ni = i + oceanWidth
+  	let x = vertex[0] - frame % (gridSize * 2)
     let z = vertex[2] - frame * 2 % gridSize + (i % 2 === 0 ? gridSize / 2 : 0)
-    let wave = cos(frame / 45 + x / 50) - sin(frame / 20 + z / 50) + sin(frame / 30 + z * x / 10000)
+  	let wave = (cos(frame / 45 + x / 50) - sin(frame / 20 + z / 50) + sin(frame / 30 + z*x / 10000))
     let y = vertex[1] + wave * waveSize
-    let a = Math.max(0, 1 - Math.sqrt(x ** 2 + z ** 2) / depth)
+    let a = Math.max(0, 1 - (Math.sqrt(x ** 2 + z ** 2)) / depth)
+    let tx, ty, tz
+    
     y -= oceanHeight
+    
+    // Transformation variables
+   	tx = x
+    ty = y
+    tz = z
 
-    let p = project(x, y, z, rad, rad2)
-    if (!p || a < 0.01) return
+    // Rotation Y
+    tx = x * cos(rad) + z * sin(rad)
+    tz = -x * sin(rad) + z * cos(rad)
+    
+    x = tx
+    y = ty
+    z = tz
+    
+    // Rotation Z
+    tx = x * cos(rad) - y * sin(rad)
+    ty = x * sin(rad) + y * cos(rad) 
+    
+    x = tx;
+    y = ty;
+    z = tz;
+    
+    // Rotation X
+    
+    ty = y * cos(rad2) - z * sin(rad2)
+    tz = y * sin(rad2) + z * cos(rad2)
+    
+    x = tx;
+    y = ty;
+    z = tz;
 
+    x /= z / perspective
+    y /= z / perspective
+    
+    
+        
+    if (a < 0.01) return
+    if (z < 0) return
+   
+    
     c.globalAlpha = a
-    c.fillStyle = `hsla(${220 + wave * 5}deg,100%,50%,50%)`
-    c.fillRect(p.px - a * vertexSize / 2, p.py - a * vertexSize / 2, a * vertexSize, a * vertexSize)
+    c.fillStyle = `hsla(${220 + wave * 5}deg, 100%, 50%,50%)`
+    c.fillRect(x - a * vertexSize / 2, y - a * vertexSize / 2, a * vertexSize, a * vertexSize)
+    c.globalAlpha = 1
   })
-
-  // Partículas subindo e formando texto
-  const progress = cycleProgress(frame)
-
-  textParticles.forEach(v => {
-    // cada partícula tem delay individual, re-mapeado dentro do progresso global
-    const t = easeInOut(Math.max(0, Math.min(1, progress * 1.4 - v.delay * 0.4)))
-
-    // arco: sobe tortuosamente antes de se fixar
-    const arc = sin(t * PI) * 80
-    const wobbleX = sin(v.phase + frame / 30) * (1 - t) * 40
-    const wobbleZ = cos(v.phase + frame / 25) * (1 - t) * 40
-
-    const x = v.ox + (v.tx - v.ox) * t + wobbleX
-    const y = v.oy + (v.ty - v.oy) * t - arc
-    const z = v.oz + (v.tz - v.oz) * t + wobbleZ
-
-    const p = project(x, y - oceanHeight, z, rad, rad2)
-    if (!p) return
-
-    // cor: azul profundo → ciano brilhante conforme sobe
-    const hue = 220 + t * 5
-    const lit  = 50 + t * 5
-    const a = 0.3 + t * 0.7
-
-    c.globalAlpha = a
-    c.fillStyle = `hsl(${hue}deg,100%,${lit}%)`
-    const sz = 2 + t * 3
-    c.fillRect(p.px - sz / 2, p.py - sz / 2, sz, sz)
-  })
-
-  c.globalAlpha = 1
   c.restore()
-
+  
+  // Post-processing
   postctx.drawImage(ocean, 0, 0)
-  postctx.globalCompositeOperation = 'screen'
+  
+  postctx.globalCompositeOperation = "screen"
   postctx.filter = 'blur(16px)'
   postctx.drawImage(ocean, 0, 0)
   postctx.filter = 'blur(0)'
-  postctx.globalCompositeOperation = 'source-over'
-
+  postctx.globalCompositeOperation = "source-over"
+  
   requestAnimationFrame(loop)
 }
 
+// Generating dots
 for (let i = 0; i < vertexCount; i++) {
-  let x = i % oceanWidth
+	let x = i % oceanWidth
   let y = 0
   let z = i / oceanWidth >> 0
-  let offset = oceanWidth / 2
-  vertices.push([(-offset + x) * gridSize, y * gridSize, z * gridSize])
+	let offset = oceanWidth / 2
+	vertices.push([(-offset + x) * gridSize, y * gridSize, z * gridSize])
 }
 
 loop(performance.now())
