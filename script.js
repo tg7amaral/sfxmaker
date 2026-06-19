@@ -3,20 +3,77 @@ const urlParams = new URLSearchParams(window.location.search);
 let girlName = urlParams.get('to');
 let instagram = urlParams.get('from');
 
-
 const confettiCount = 100
-    const sequinCount = 20
+const sequinCount = 20
 
-    // variáveis de "física"
-    const gravityConfetti = 0.3
-    const gravitySequins = 0.55
-    const dragConfetti = 0.075
-    const dragSequins = 0.02
-    const terminalVelocity = 3
+// variáveis de "física"
+const gravityConfetti = 0.3
+const gravitySequins = 0.55
+const dragConfetti = 0.075
+const dragSequins = 0.02
+const terminalVelocity = 3
 
-    var disabled = false
-    var canvas,ctx;
-    var button;
+var disabled = false
+var canvas, ctx;
+var button;
+
+/* =========================================================================
+   ESTADO COMPARTILHADO ENTRE TODAS AS ANIMAÇÕES
+   (precisa estar declarado aqui em cima porque todas as funções de "desenho"
+   abaixo são chamadas a partir de um único loop, lá no final do arquivo)
+   ========================================================================= */
+
+// --- onda de fundo (waterCanvas) ---
+let canvas1, ctx1, waves = [];
+let waterAlpha = "0.01";
+let waterTicks = 0;
+
+// --- confete ---
+let confetti = [];
+let sequins = [];
+let confettiActive = false;
+
+// --- música / letras sincronizadas ---
+let musicActive = false;
+let audio, audioCtx, analyser, dataArray, bufferLength;
+let coverCanvas, cctx;
+let lyricsIndex = 0;
+let hideTriggered = false;
+let lastTreble = 0;
+let lastTrebleBeat = 0;
+
+const lyrics = [
+  {text:"Se",end:2.3}, {text:"não",end:2.6}, {text:"existe",end:3}, {text:"vida",end:3.3},
+  {text:"fora",end:3.5}, {text:"da",end:3.8}, {text:"Terra",end:4.2}, {text:" ",end:4.3},
+  {text:"O",end:4.6}, {text:"universo",end:5}, {text:"é",end:5.2}, {text:"desperdício",end:5.5},
+  {text:"de",end:5.8}, {text:"espaço",end:6.3}, {text:"Mas",end:6.5}, {text:"as",end:6.8},
+  {text:"estrelas",end:7.3}, {text:"apareceram",end:8}, {text:"na",end:8.3}, {text:"minha",end:8.7},
+  {text:"frente",end:9.2}, {text:"quando",end:9.6}, {text:"eu",end:10}, {text:"recebi",end:10.4},
+  {text:"seu",end:10.7}, {text:"abraço",end:11.2}, {text:"Foi",end:11.5}, {text:"um",end:11.7},
+  {text:"tanto",end:12.1}, {text:"quanto",end:12.5}, {text:"muito",end:12.8}, {text:"mágico",end:13.2},
+  {text:"entro",end:13.6}, {text:"no",end:13.9}, {text:"buraco",end:14.3}, {text:"negro",end:14.7},
+  {text:"só",end:15}, {text:"para",end:15.3}, {text:"voltar",end:15.6}, {text:"e",end:15.8},
+  {text:"ver",end:16.1}, {text:"seu",end:16.4}, {text:"sorriso",end:16.8}, {text:"lá",end:17.1},
+  {text:"no",end:17.3}, {text:"passado",end:17.7}, {text:"fazendo",end:18.25}, {text:"minha",end:18.6},
+  {text:"mente",end:19}, {text:"flutuar",end:20}, {text:"Mas",end:20.4}, {text:"sei",end:20.8},
+  {text:"lá",end:21.2}, {text:"se",end:21.6}, {text:"existe",end:22}, {text:"vida",end:22.4},
+  {text:"fora",end:22.8}, {text:"da",end:23.1}, {text:"Terra",end:23.5}, {text:"disso",end:23.8},
+  {text:"eu",end:24.2}, {text:"não",end:24.6}, {text:"sei",end:25.3},
+];
+
+// --- oceano 3D (definidas mais abaixo, junto com o resto do efeito) ---
+let c, postctx, ocean, vertices = [];
+let vertexCount = 7000
+let vertexSize = 3
+let oceanWidth = 150
+let oceanHeight = -80
+let gridSize = 32;
+let waveSize = 32;
+let perspective = 100;
+let depth = (vertexCount / oceanWidth * gridSize)
+let oceanFrame = 0
+let oldTimeStamp = performance.now();
+let { sin, cos, tan, PI } = Math
 
 function renderPage(letterIndex){
   switch(letterIndex){
@@ -40,6 +97,8 @@ function renderPage(letterIndex){
 
       <canvas id="oceanCanvas"></canvas>
 
+      <p id="mainText">Só existe um convite desse no mundo. Não existe mais nenhum, para nenhuma outra pessoa</p>
+
       <canvas id="confetti"></canvas>
 
       <section class="mainButtonsContainer">
@@ -55,137 +114,124 @@ function renderPage(letterIndex){
         </section>
       </section>`;
 
-      // <div class="BibleContainer">
-      //   <h2 class="BibleText">O amor <span class="typed-text"></span><span class="cursor">&nbsp;</span></h2>
-      //   <h3 class="BibleBook">1 Coríntios 13:7</h3>
-      // </div>    `;
-
       document.querySelector("#cover").addEventListener("click",function(event){
         document.querySelector("#cover").innerHTML = "";
         initMusic();
       })
 
-    const canvas1 = document.getElementById('waterCanvas');
-    const ctx1 = canvas1.getContext('2d');
-    canvas1.width = canvas1.offsetWidth;
-    canvas1.height = canvas1.offsetHeight;
+      canvas1 = document.getElementById('waterCanvas');
+      ctx1 = canvas1.getContext('2d');
+      canvas1.width = canvas1.offsetWidth;
+      canvas1.height = canvas1.offsetHeight;
 
-    const waves = [];
-    const waveCount = 30;
+      const waveCount = 30;
 
-    function getRandom(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    for (let i = 0; i < waveCount; i++) {
-        waves.push({
-            y: (canvas1.height / 2), // 中央付近に分布
-            length: 0.015,
-            amplitude: (canvas1.height / 3),
-            frequency: getRandom(10,20) / 1000,
-            phase: Math.PI * 2
-        });
+      function getRandom(min, max) {
+          return Math.floor(Math.random() * (max - min + 1)) + min;
       }
 
-    let alpha = "0.01";
-    let ticks = 0;
-
-    function animate() {
-        requestAnimationFrame(animate);
-
-        ticks++;
-
-        if(ticks >= 500){
-          alpha = alpha === "0.01" ? "0.05" : "0.01";
-          ticks = 0;
+      waves = [];
+      for (let i = 0; i < waveCount; i++) {
+          waves.push({
+              y: (canvas1.height / 2),
+              length: 0.015,
+              amplitude: (canvas1.height / 3),
+              frequency: getRandom(10,20) / 1000,
+              phase: Math.PI * 2
+          });
         }
 
-        ctx1.fillStyle = `rgb(0,0,0,${alpha})`;
-        ctx1.fillRect(0, 0, canvas1.width, canvas1.height);
+      window.addEventListener('resize', () => {
+          canvas1.width = window.innerWidth;
+          canvas1.height = window.innerHeight;
+          waves.forEach((wave) => {
+             wave.y = (canvas1.height / 2);
+             wave.amplitude = (canvas1.height / 3);
+          });
+      });
 
-        // Desenhar ondas atuais
-        waves.forEach((wave, index) => {
-          ctx1.beginPath();
-          ctx1.moveTo(0, wave.y);
-          for (let i = 0; i < canvas1.width; i++) {
-              const yOffset = Math.sin(i * wave.length + wave.phase) * wave.amplitude * Math.sin(wave.phase);
-              ctx1.lineTo(i, wave.y + yOffset);
-          }
-          ctx1.strokeStyle = `hsl(${index / 2 + 220}, 100%, 50%)`;
-          ctx1.stroke();
+      ////////////////////////////////////////////////////////////////////////////////////
 
-          wave.phase += wave.frequency;
-      });    
-    }
+      const typedTextSpan = document.querySelector(".typed-text");
+      const cursorSpan = document.querySelector(".cursor");
 
-    animate();
+      const textArray = ["tudo sofre","tudo crê","tudo espera","tudo suporta"];
+      const typingDelay = 200;
+      const erasingDelay = 100;
+      const newTextDelay = 2000;
+      let textArrayIndex = 0;
+      let charIndex = 0;
 
-    window.addEventListener('resize', () => {
-        canvas1.width = window.innerWidth;
-        canvas1.height = window.innerHeight;
-        waves.forEach((wave) => {
-           wave.y = (canvas1.height / 2);
-           wave.amplitude = (canvas1.height / 3);
-        });
-    });
-
-    ////////////////////////////////////////////////////////////////////////////////////
-
-    const typedTextSpan = document.querySelector(".typed-text");
-    const cursorSpan = document.querySelector(".cursor");
-
-    const textArray = ["tudo sofre","tudo crê","tudo espera","tudo suporta"];
-    const typingDelay = 200;
-    const erasingDelay = 100;
-    const newTextDelay = 2000; // Delay between current and next text
-    let textArrayIndex = 0;
-    let charIndex = 0;
-
-    function type() {
-      if (charIndex < textArray[textArrayIndex].length) {
-        if(!cursorSpan.classList.contains("typing")) cursorSpan.classList.add("typing");
-        typedTextSpan.textContent += textArray[textArrayIndex].charAt(charIndex);
-        charIndex++;
-        setTimeout(type, typingDelay);
-      } 
-      else {
-        cursorSpan.classList.remove("typing");
-        setTimeout(erase, newTextDelay);
+      function type() {
+        if (charIndex < textArray[textArrayIndex].length) {
+          if(!cursorSpan.classList.contains("typing")) cursorSpan.classList.add("typing");
+          typedTextSpan.textContent += textArray[textArrayIndex].charAt(charIndex);
+          charIndex++;
+          setTimeout(type, typingDelay);
+        }
+        else {
+          cursorSpan.classList.remove("typing");
+          setTimeout(erase, newTextDelay);
+        }
       }
-    }
 
-    function erase() {
-      if (charIndex > 0) {
-        if(!cursorSpan.classList.contains("typing")) cursorSpan.classList.add("typing");
-        typedTextSpan.textContent = textArray[textArrayIndex].substring(0, charIndex-1);
-        charIndex--;
-        setTimeout(erase, erasingDelay);
-      } 
-      else {
-        cursorSpan.classList.remove("typing");
-        textArrayIndex++;
-        if(textArrayIndex>=textArray.length) textArrayIndex=0;
-        setTimeout(type, typingDelay + 1100);
+      function erase() {
+        if (charIndex > 0) {
+          if(!cursorSpan.classList.contains("typing")) cursorSpan.classList.add("typing");
+          typedTextSpan.textContent = textArray[textArrayIndex].substring(0, charIndex-1);
+          charIndex--;
+          setTimeout(erase, erasingDelay);
+        }
+        else {
+          cursorSpan.classList.remove("typing");
+          textArrayIndex++;
+          if(textArrayIndex>=textArray.length) textArrayIndex=0;
+          setTimeout(type, typingDelay + 1100);
+        }
       }
-    }
 
-    document.addEventListener("DOMContentLoaded", function() { // On DOM Load initiate the effect
-      if(textArray.length) setTimeout(type, newTextDelay + 250);
-    });
-    
-    canvas = document.getElementById('confetti')
-    ctx = canvas.getContext('2d')
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
+      document.addEventListener("DOMContentLoaded", function() {
+        if(textArray.length) setTimeout(type, newTextDelay + 250);
+      });
 
-    button = document.querySelector(".liquidButton > span")
+      canvas = document.getElementById('confetti')
+      ctx = canvas.getContext('2d')
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
+
+      button = document.querySelector(".liquidButton > span")
 
     }
   }
 }
 
-let confetti = [];
-let sequins = [];
+// =========================================================================
+// DESENHO DA ÁGUA (antiga função animate())
+// =========================================================================
+function drawWater() {
+  if (!ctx1) return;
+
+  waterTicks++;
+  if (waterTicks >= 500) {
+    waterAlpha = waterAlpha === "0.01" ? "0.05" : "0.01";
+    waterTicks = 0;
+  }
+
+  ctx1.fillStyle = `rgb(0,0,0,${waterAlpha})`;
+  ctx1.fillRect(0, 0, canvas1.width, canvas1.height);
+
+  waves.forEach((wave, i) => {
+    ctx1.beginPath();
+    ctx1.moveTo(0, wave.y);
+    for (let x = 0; x < canvas1.width; x++) {
+        const yOffset = Math.sin(x * wave.length + wave.phase) * wave.amplitude * Math.sin(wave.phase);
+        ctx1.lineTo(x, wave.y + yOffset);
+    }
+    ctx1.strokeStyle = `hsl(${i / 2 + 220}, 100%, 50%)`;
+    ctx1.stroke();
+    wave.phase += wave.frequency;
+  });
+}
 
 const colors = [
   { front: '#0077FF', back: '#0066FF' },
@@ -257,7 +303,7 @@ Sequin.prototype.update = function() {
 initBurst = () => {
   confetti = [];
   sequins = [];
-  
+
   for (let i = 0; i < confettiCount; i++) {
     confetti.push(new Confetto());
   }
@@ -266,10 +312,13 @@ initBurst = () => {
   }
 };
 
-render = () => {
+// =========================================================================
+// DESENHO DO CONFETE (antiga função render())
+// =========================================================================
+function drawConfetti() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-  confetti.forEach((confetto, index) => {
+
+  confetti.forEach((confetto) => {
     let width = (confetto.dimensions.x * confetto.scale.x);
     let height = (confetto.dimensions.y * confetto.scale.y);
     ctx.translate(confetto.position.x, confetto.position.y);
@@ -280,7 +329,7 @@ render = () => {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
   });
 
-  sequins.forEach((sequin, index) => {
+  sequins.forEach((sequin) => {
     ctx.translate(sequin.position.x, sequin.position.y);
     sequin.update();
     ctx.fillStyle = sequin.color;
@@ -290,15 +339,16 @@ render = () => {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
   });
 
-  confetti.forEach((confetto, index) => {
-    if (confetto.position.y >= canvas.height) confetti.splice(index, 1);
-  });
-  sequins.forEach((sequin, index) => {
-    if (sequin.position.y >= canvas.height) sequins.splice(index, 1);
-  });
+  // remove o que já saiu da tela (usando filter em vez de splice durante o forEach,
+  // que era um bug sutil no código original)
+  confetti = confetti.filter((c) => c.position.y < canvas.height);
+  sequins = sequins.filter((s) => s.position.y < canvas.height);
 
-  window.requestAnimationFrame(render);
-};
+  // economiza processamento quando não sobrou nada para desenhar
+  if (confetti.length === 0 && sequins.length === 0) {
+    confettiActive = false;
+  }
+}
 
 function yes(){
   if (!disabled) {
@@ -306,7 +356,7 @@ function yes(){
   // Loading stage
     setTimeout(() => {
       window.initBurst()
-      render()
+      confettiActive = true
       navigator.vibrate([100,50,100,200,1000]);
       setTimeout(() => {
         // Reset button so user can select it again
@@ -348,129 +398,51 @@ function hideCover(){
 }
 
 function initMusic() {
-    const audio = document.querySelector("#music");
+    audio = document.querySelector("#music");
 
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const analyser = audioCtx.createAnalyser();
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
     analyser.fftSize = 2048;
 
     const source = audioCtx.createMediaElementSource(audio);
     source.connect(analyser);
     analyser.connect(audioCtx.destination);
 
-    let coverCanvas = document.createElement("canvas");
+    coverCanvas = document.createElement("canvas");
     coverCanvas.id = "coverCanvas";
     coverCanvas.width = window.innerWidth;
     coverCanvas.height = window.innerHeight;
     document.querySelector("#cover").appendChild(coverCanvas);
 
-    let cctx = coverCanvas.getContext("2d");
+    cctx = coverCanvas.getContext("2d");
 
     cctx.imageSmoothingEnabled = false;
-  cctx.webkitImageSmoothingEnabled = false; // Safari/Chrome antigo
-  cctx.mozImageSmoothingEnabled = false;    // Firefox antigo
-  cctx.msImageSmoothingEnabled = false;     // IE11
+    cctx.webkitImageSmoothingEnabled = false; // Safari/Chrome antigo
+    cctx.mozImageSmoothingEnabled = false;    // Firefox antigo
+    cctx.msImageSmoothingEnabled = false;     // IE11
 
-  cctx.font = "bold 60px monospace";
+    cctx.font = "bold 60px monospace";
 
-    const VELOCITY = 15; // Velocidade da animação
-    
-    // Configurações para o efeito de ondas
-    const WAVE_HEIGHT = 30; // Altura base das ondas (50px)
-    const WAVE_COLOR = "#0055FF"; // Cor azul específica
-    const WAVE_SEGMENTS = 50; // Segmentos para ondas suaves
-    const BASS_MULTIPLIER = 3.0; // Ajustado para ser menos intenso que antes
-    const WAVE_SPEED = 1.0; // Velocidade de animação das ondas
-    
     // Buffer para análise de frequência
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
+    bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
 
-    // Controle de vibração por agudos
-let lastVibration = 0;
-const TREBLE_THRESHOLD = 0.1;   // sensibilidade (0.3 = vibra fácil, 0.7 = vibra só em agudos fortes)
-const VIBRATION_DELAY = 120;     // tempo mínimo entre vibrações (ms)
-    
-    // Inicializa pontos da onda para animação mais suave
-    let wavePoints = Array(WAVE_SEGMENTS + 1).fill(0);
-    
-    // Histórico de resposta aos graves para efeito pulsante
-    let bassPulse = 0;
+    audio.addEventListener("play", () => {
+        if (audioCtx.state === "suspended") {
+            audioCtx.resume();
+        }
+        hideCover();
+        musicActive = true; // libera o desenho das letras no loop principal
+    });
+    audio.play();
 
-    const BASS_THRESHOLD = 0.5;  // Somente ativa se o grave for maior que 25% da escala
-    const BASS_SENSITIVITY = 5; // Ajusta a curva de resposta
-
-    let lyrics = [{text:"Se",end:2.3},
-      {text:"não",end:2.6},
-      {text:"existe",end:3},
-      {text:"vida",end:3.3},
-      {text:"fora",end:3.5},
-      {text:"da",end:3.8},
-      {text:"Terra",end:4.2},
-      {text:" ",end:4.3},
-      {text:"O",end:4.6},
-      {text:"universo",end:5},
-      {text:"é",end:5.2},
-      {text:"desperdício",end:5.5},
-      {text:"de",end:5.8},
-      {text:"espaço",end:6.3},
-      {text:"Mas",end:6.5},
-      {text:"as",end:6.8},
-      {text:"estrelas",end:7.3},
-      {text:"apareceram",end:8},
-      {text:"na",end:8.3},
-      {text:"minha",end:8.7},
-      {text:"frente",end:9.2},
-      {text:"quando",end:9.6},
-      {text:"eu",end:10},
-      {text:"recebi",end:10.4},
-      {text:"seu",end:10.7},
-      {text:"abraço",end:11.2},
-      {text:"Foi",end:11.5},
-      {text:"um",end:11.7},
-      {text:"tanto",end:12.1},
-      {text:"quanto",end:12.5},
-      {text:"muito",end:12.8},
-      {text:"mágico",end:13.2},
-      {text:"entro",end:13.6},
-      {text:"no",end:13.9},
-      {text:"buraco",end:14.3},
-      {text:"negro",end:14.7},
-      {text:"só",end:15},
-      {text:"para",end:15.3},
-      {text:"voltar",end:15.6},
-      {text:"e",end:15.8},
-      {text:"ver",end:16.1},
-      {text:"seu",end:16.4},
-      {text:"sorriso",end:16.8},
-      {text:"lá",end:17.1},
-      {text:"no",end:17.3},
-      {text:"passado",end:17.7},
-      {text:"fazendo",end:18.25},
-      {text:"minha",end:18.6},
-      {text:"mente",end:19},
-      {text:"flutuar",end:20},
-      {text:"Mas",end:20.4},
-      {text:"sei",end:20.8},
-      {text:"lá",end:21.2},
-      {text:"se",end:21.6},
-      {text:"existe",end:22},
-      {text:"vida",end:22.4},
-      {text:"fora",end:22.8},
-      {text:"da",end:23.1},
-      {text:"Terra",end:23.5},
-      {text:"disso",end:23.8},
-      {text:"eu",end:24.2},
-      {text:"não",end:24.6},
-      {text:"sei",end:25.3},
-    ];
-
-    let index = 0;
-
-    let textSize = 0;
-
-let lastTreble = 0;
-let lastTrebleBeat = 0;
+    audio.addEventListener("ended", () => {
+      audio.src = "musicVibe.mp3"; // Define o novo áudio
+      audio.loop = true; // Faz o segundo tocar em loop
+      audio.play(); // Toca automaticamente
+      audio.volume = 0.3; // Volume
+    });
+}
 
 function detectTrebleBeat() {
     analyser.getByteFrequencyData(dataArray);
@@ -493,15 +465,11 @@ function detectTrebleBeat() {
     // detecta subida rápida
     let diff = smooth - lastTreble;
 
-    //console.log("Treble:", smooth, "Diff:", diff);
-
     if (diff > 0.5) {
         let now = Date.now();
 
         if (now - lastTrebleBeat > 80) {
             navigator.vibrate(25);
-            console.log("AGUDO DETECTADO");
-
             lastTrebleBeat = now;
         }
     }
@@ -509,174 +477,44 @@ function detectTrebleBeat() {
     lastTreble = smooth;
 }
 
-  let hide = false;
+// =========================================================================
+// DESENHO DAS LETRAS DA MÚSICA (antiga função drawLyrics())
+// =========================================================================
+function drawLyrics() {
+    detectTrebleBeat();
 
-    function drawLyrics() {
-      detectTrebleBeat();
+    cctx.clearRect(0, 0, coverCanvas.width, coverCanvas.height);
 
-        cctx.clearRect(0, 0, coverCanvas.width, coverCanvas.height);
-        
-        // Desenhar as letras da música em seguida
+    let currentTime = audio.currentTime;
 
-        let currentTime = audio.currentTime;
+    cctx.textAlign = "center";
+    cctx.textBaseline = "middle";
+    cctx.fillStyle = "#FFFFFF";
 
-        cctx.textAlign = "center";
-                        cctx.textBaseline = "middle"; // opcional, mas ajuda
-                        cctx.fillStyle = "#FFFFFF";
-
-      // if(cctx.measureText(lyrics[index].text).width >= window.innerWidth){
-      //   cctx.font = "bold 55px monospace";
-      // }else{
-      //   cctx.font = "bold 80px monospace";
-      // }
-
-        if(currentTime >= 2 && lyrics[index] != undefined){cctx.fillText(lyrics[index].text,window.innerWidth/2, window.innerHeight/2);}
-        if(lyrics[index] != undefined && currentTime >= lyrics[index].end){
-          index++;
-        }
-
-                    if(currentTime >= 57 && !hide){
-                      hide = true
-                      hideCover()
-                    }//}else{
-        requestAnimationFrame(drawLyrics);
-                    //}
+    if(currentTime >= 2 && lyrics[lyricsIndex] != undefined){
+      cctx.fillText(lyrics[lyricsIndex].text, window.innerWidth/2, window.innerHeight/2);
+    }
+    if(lyrics[lyricsIndex] != undefined && currentTime >= lyrics[lyricsIndex].end){
+      lyricsIndex++;
     }
 
-    audio.addEventListener("play", () => {
-        if (audioCtx.state === "suspended") {
-            audioCtx.resume();
-        }
-        hideCover();
-    });
-    audio.play();
-
-    audio.addEventListener("ended", () => {
-      //hideCover();
-
-      audio.src = "musicVibe.mp3"; // Define o novo áudio
-      audio.loop = true; // Faz o segundo tocar em loop
-      audio.play(); // Toca automaticamente
-      audio.volume = 0.3; // Volume
-    });
+    if(currentTime >= 57 && !hideTriggered){
+      hideTriggered = true
+      hideCover()
+      musicActive = false; // letra acabou, não precisa mais ser desenhada
+    }
 }
 
 /////////////////////
 
 /**
  * 3D Software ocean effect with Canvas2D
- * You can change properties under comment "Effect properties"
+ * You can change properties no início do arquivo, na seção "ESTADO COMPARTILHADO"
  */
 
-// Init Context
-let c = document.createElement('canvas').getContext('2d')
-let postctx = document.querySelector("#oceanCanvas").getContext('2d')
-let ocean = c.canvas
-let vertices = []
-
-// Effect Properties
-let vertexCount = 7000
-let vertexSize = 3
-let oceanWidth = 150
-let oceanHeight = -80
-let gridSize = 32;
-let waveSize = 32;
-let perspective = 100;
-
-// Common variables
-let depth = (vertexCount / oceanWidth * gridSize)
-let frame = 0
-let { sin, cos, tan, PI } = Math
-
-// Render loop
-let oldTimeStamp = performance.now();
-let loop = (timeStamp) => {
-	let rad = sin(frame / 100) * PI / 20
-  let rad2 = sin(frame / 50) * PI / 10
-  const dt = (timeStamp - oldTimeStamp) / 1000;
-  oldTimeStamp = timeStamp;
-  
-	frame += dt * 50;
-	if (postctx.canvas.width !== postctx.canvas.offsetWidth || postctx.canvas.height !== postctx.canvas.offsetHeight) { 
-  	postctx.canvas.width = ocean.width = postctx.canvas.offsetWidth
-    postctx.canvas.height = ocean.height = postctx.canvas.offsetHeight
-  }
-
-  
-	c.fillStyle = `hsl(200deg, 100%, 0%)`
-  c.fillRect(0, 0, ocean.width, ocean.height)
-  c.save()
-  c.translate(ocean.width / 2, ocean.height / 2)
-  
-  c.beginPath()
-  vertices.forEach((vertex, i) => {
-  	let ni = i + oceanWidth
-  	let x = vertex[0] - frame % (gridSize * 2)
-    let z = vertex[2] - frame * 2 % gridSize + (i % 2 === 0 ? gridSize / 2 : 0)
-  	let wave = (cos(frame / 45 + x / 50) - sin(frame / 20 + z / 50) + sin(frame / 30 + z*x / 10000))
-    let y = vertex[1] + wave * waveSize
-    let a = Math.max(0, 1 - (Math.sqrt(x ** 2 + z ** 2)) / depth)
-    let tx, ty, tz
-    
-    y -= oceanHeight
-    
-    // Transformation variables
-   	tx = x
-    ty = y
-    tz = z
-
-    // Rotation Y
-    tx = x * cos(rad) + z * sin(rad)
-    tz = -x * sin(rad) + z * cos(rad)
-    
-    x = tx
-    y = ty
-    z = tz
-    
-    // Rotation Z
-    tx = x * cos(rad) - y * sin(rad)
-    ty = x * sin(rad) + y * cos(rad) 
-    
-    x = tx;
-    y = ty;
-    z = tz;
-    
-    // Rotation X
-    
-    ty = y * cos(rad2) - z * sin(rad2)
-    tz = y * sin(rad2) + z * cos(rad2)
-    
-    x = tx;
-    y = ty;
-    z = tz;
-
-    x /= z / perspective
-    y /= z / perspective
-    
-    
-        
-    if (a < 0.01) return
-    if (z < 0) return
-   
-    
-    c.globalAlpha = a
-    c.fillStyle = `hsla(${220 + wave * 5}deg, 100%, 50%,50%)`
-    c.fillRect(x - a * vertexSize / 2, y - a * vertexSize / 2, a * vertexSize, a * vertexSize)
-    c.globalAlpha = 1
-  })
-  c.restore()
-  
-  // Post-processing
-  postctx.drawImage(ocean, 0, 0)
-  
-  postctx.globalCompositeOperation = "screen"
-  postctx.filter = 'blur(16px)'
-  postctx.drawImage(ocean, 0, 0)
-  postctx.filter = 'blur(0)'
-  postctx.globalCompositeOperation = "source-over"
-  
-  requestAnimationFrame(loop)
-}
+c = document.createElement('canvas').getContext('2d')
+postctx = document.querySelector("#oceanCanvas").getContext('2d')
+ocean = c.canvas
 
 // Generating dots
 for (let i = 0; i < vertexCount; i++) {
@@ -687,4 +525,104 @@ for (let i = 0; i < vertexCount; i++) {
 	vertices.push([(-offset + x) * gridSize, y * gridSize, z * gridSize])
 }
 
-loop(performance.now())
+// =========================================================================
+// DESENHO DO OCEANO 3D (antiga função loop())
+// =========================================================================
+function drawOcean(timeStamp) {
+	let rad = sin(oceanFrame / 100) * PI / 20
+  let rad2 = sin(oceanFrame / 50) * PI / 10
+  const dt = (timeStamp - oldTimeStamp) / 1000;
+  oldTimeStamp = timeStamp;
+
+	oceanFrame += dt * 50;
+	if (postctx.canvas.width !== postctx.canvas.offsetWidth || postctx.canvas.height !== postctx.canvas.offsetHeight) {
+  	postctx.canvas.width = ocean.width = postctx.canvas.offsetWidth
+    postctx.canvas.height = ocean.height = postctx.canvas.offsetHeight
+  }
+
+
+	c.fillStyle = `hsl(200deg, 100%, 0%)`
+  c.fillRect(0, 0, ocean.width, ocean.height)
+  c.save()
+  c.translate(ocean.width / 2, ocean.height / 2)
+
+  c.beginPath()
+  vertices.forEach((vertex, i) => {
+  	let ni = i + oceanWidth
+  	let x = vertex[0] - oceanFrame % (gridSize * 2)
+    let z = vertex[2] - oceanFrame * 2 % gridSize + (i % 2 === 0 ? gridSize / 2 : 0)
+  	let wave = (cos(oceanFrame / 45 + x / 50) - sin(oceanFrame / 20 + z / 50) + sin(oceanFrame / 30 + z*x / 10000))
+    let y = vertex[1] + wave * waveSize
+    let a = Math.max(0, 1 - (Math.sqrt(x ** 2 + z ** 2)) / depth)
+    let tx, ty, tz
+
+    y -= oceanHeight
+
+    tx = x
+    ty = y
+    tz = z
+
+    // Rotation Y
+    tx = x * cos(rad) + z * sin(rad)
+    tz = -x * sin(rad) + z * cos(rad)
+
+    x = tx
+    y = ty
+    z = tz
+
+    // Rotation Z
+    tx = x * cos(rad) - y * sin(rad)
+    ty = x * sin(rad) + y * cos(rad)
+
+    x = tx;
+    y = ty;
+    z = tz;
+
+    // Rotation X
+    ty = y * cos(rad2) - z * sin(rad2)
+    tz = y * sin(rad2) + z * cos(rad2)
+
+    x = tx;
+    y = ty;
+    z = tz;
+
+    x /= z / perspective
+    y /= z / perspective
+
+
+    if (a < 0.01) return
+    if (z < 0) return
+
+
+    c.globalAlpha = a
+    c.fillStyle = `hsla(${220 + wave * 5}deg, 100%, 50%,50%)`
+    c.fillRect(x - a * vertexSize / 2, y - a * vertexSize / 2, a * vertexSize, a * vertexSize)
+    c.globalAlpha = 1
+  })
+  c.restore()
+
+  // Post-processing
+  postctx.drawImage(ocean, 0, 0)
+
+  postctx.globalCompositeOperation = "screen"
+  postctx.filter = 'blur(16px)'
+  postctx.drawImage(ocean, 0, 0)
+  postctx.filter = 'blur(0)'
+  postctx.globalCompositeOperation = "source-over"
+}
+
+// =========================================================================
+// LOOP PRINCIPAL ÚNICO — substitui os 4 requestAnimationFrame separados
+// (água, oceano, confete e letras da música)
+// =========================================================================
+function masterLoop(timestamp) {
+  requestAnimationFrame(masterLoop);
+
+  drawWater();
+  drawOcean(timestamp);
+
+  if (confettiActive) drawConfetti();
+  if (musicActive) drawLyrics();
+}
+
+requestAnimationFrame(masterLoop);
